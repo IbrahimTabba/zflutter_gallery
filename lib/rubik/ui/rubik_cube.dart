@@ -8,8 +8,16 @@ import 'package:zflutter_gallery/rubik/models/rubik_cube_model.dart';
 class RubikCube extends StatefulWidget {
   final CubeController cubeController;
   final Animation horizontalRotateAnimation;
+  final Animation faceRotateAnimation;
+  final Animation sideRotateAnimation;
 
-  const RubikCube({Key? key, required this.cubeController, required this.horizontalRotateAnimation}) : super(key: key);
+  const RubikCube(
+      {Key? key,
+      required this.cubeController,
+      required this.horizontalRotateAnimation,
+      required this.faceRotateAnimation,
+      required this.sideRotateAnimation})
+      : super(key: key);
 
   @override
   _RubikCubeState createState() => _RubikCubeState();
@@ -31,9 +39,19 @@ class _RubikCubeState extends State<RubikCube> {
     return AnimatedBuilder(
       animation: widget.horizontalRotateAnimation,
       builder: (BuildContext context, Widget? child) {
-        return ZGesture(
-          child: _cube(cube),
-          maxXRotation: tau/12,
+        return AnimatedBuilder(
+          animation: widget.sideRotateAnimation,
+          builder: (BuildContext context, Widget? child) {
+            return AnimatedBuilder(
+              animation: widget.faceRotateAnimation,
+              builder: (BuildContext context, Widget? child) {
+                return ZGesture(
+                  child: _cube(cube),
+                  maxXRotation: tau / 12,
+                );
+              },
+            );
+          },
         );
       },
     );
@@ -44,14 +62,25 @@ class _RubikCubeState extends State<RubikCube> {
       children: [
         ZPositioned(
           rotate: ZVector.only(
-            y: widget.horizontalRotateAnimation.value
+            y: widget.horizontalRotateAnimation.value *
+                ((widget.cubeController.targetMove?.clockWise ?? true)
+                    ? 1.0
+                    : -1.0),
+            x: widget.sideRotateAnimation.value *
+                ((widget.cubeController.targetMove?.clockWise ?? true)
+                    ? 1.0
+                    : -1.0),
+            z: widget.faceRotateAnimation.value *
+                ((widget.cubeController.targetMove?.clockWise ?? true)
+                    ? 1.0
+                    : -1.0),
           ),
           child: ZGroup(
             children: [
               for (int i = 0; i < cube.cells.length; i++)
                 for (int j = 0; j < cube.cells[i].length; j++)
                   for (int k = 0; k < cube.cells[i][j].length; k++)
-                    if(isTargetFace(widget.cubeController.targetFace, i, j, k))
+                    if (isTargetFace(widget.cubeController.targetMove, i, j, k))
                       _cubeCell(i, j, k, cube.cells[i][j][k])
             ],
           ),
@@ -59,14 +88,22 @@ class _RubikCubeState extends State<RubikCube> {
         for (int i = 0; i < cube.cells.length; i++)
           for (int j = 0; j < cube.cells[i].length; j++)
             for (int k = 0; k < cube.cells[i][j].length; k++)
-              if(!isTargetFace(widget.cubeController.targetFace, i, j, k))
+              if (!isTargetFace(widget.cubeController.targetMove, i, j, k))
                 _cubeCell(i, j, k, cube.cells[i][j][k])
       ],
     );
   }
 
-  bool isTargetFace(CubeFaces? targetFace, int i , int j , int k){
-    if(targetFace == CubeFaces.bottom && i==0) {
+  bool isTargetFace(TargetMove? targetMove, int i, int j, int k) {
+    if (targetMove?.cubeAxis == CubeAxis.horizontal &&
+        i == targetMove?.moveIndex) {
+      return true;
+    }
+    if (targetMove?.cubeAxis == CubeAxis.vertical &&
+        k == targetMove?.moveIndex) {
+      return true;
+    }
+    if (targetMove?.cubeAxis == CubeAxis.side && j == targetMove?.moveIndex) {
       return true;
     }
     return false;
@@ -80,9 +117,9 @@ class _RubikCubeState extends State<RubikCube> {
     }
     return ZPositioned(
       translate: ZVector.only(
-        y: (-cubeCellSize * i) + (((cube.size-1) * cubeCellSize) / 2),
-        x: (cubeCellSize * j) - (((cube.size-1) * cubeCellSize) / 2),
-        z: (-cubeCellSize * k) + (((cube.size-1) * cubeCellSize) / 2),
+        y: (-cubeCellSize * i) + (((cube.size - 1) * cubeCellSize) / 2),
+        x: (cubeCellSize * j) - (((cube.size - 1) * cubeCellSize) / 2),
+        z: (-cubeCellSize * k) + (((cube.size - 1) * cubeCellSize) / 2),
       ),
       child: ZGroup(
         children: [
@@ -101,9 +138,9 @@ class _RubikCubeState extends State<RubikCube> {
             rearColor: cell.backColor,
           ),
           ZBox(
-            height: cubeCellSize - cubeCellMargin,
-            width: cubeCellSize - cubeCellMargin,
-            depth: cubeCellSize - cubeCellMargin,
+            height: cubeCellSize - cubeCellMargin + 2,
+            width: cubeCellSize - cubeCellMargin + 2,
+            depth: cubeCellSize - cubeCellMargin + 2,
             stroke: 1,
             fill: false,
             frontColor: Colors.black,

@@ -34,10 +34,8 @@ dependencies:
     path: ../../my-plugins/zflutter/zflutter
 
   provider: ^6.0.1
+  synchronized: ^3.0.0
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

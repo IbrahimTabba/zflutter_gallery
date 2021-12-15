@@ -23,11 +23,20 @@ class _RubikCubeGameState extends State<RubikCubeGame>
   late final AnimationController horizontalRotateController;
   late final CurvedAnimation horizontalRotateCurve;
 
+  late final Animation sideRotateAnimation;
+  late final AnimationController sideRotateController;
+  late final CurvedAnimation sideRotateCurve;
+
+  late final Animation faceRotateAnimation;
+  late final AnimationController faceRotateController;
+  late final CurvedAnimation faceRotateCurve;
+
+
   @override
   void initState() {
     super.initState();
     horizontalRotateController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
     horizontalRotateCurve = CurvedAnimation(
       parent: horizontalRotateController,
       curve: Curves.linear,
@@ -35,9 +44,29 @@ class _RubikCubeGameState extends State<RubikCubeGame>
     horizontalRotateAnimation =
         Tween<double>(begin: 0, end: tau / 4).animate(horizontalRotateCurve);
 
+    sideRotateController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
+    sideRotateCurve = CurvedAnimation(
+      parent: sideRotateController,
+      curve: Curves.linear,
+    );
+    sideRotateAnimation =
+        Tween<double>(begin: 0, end: tau / 4).animate(sideRotateCurve);
+
+    faceRotateController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
+    faceRotateCurve = CurvedAnimation(
+      parent: faceRotateController,
+      curve: Curves.linear,
+    );
+    faceRotateAnimation =
+        Tween<double>(begin: 0, end: tau / 4).animate(faceRotateCurve);
+
     controller = CubeController(
       cube: RubikCubitModel(widget.cubeSize),
       horizontalRotateController: horizontalRotateController,
+      faceRotateController: faceRotateController,
+      sideRotateController: sideRotateController
     );
   }
 
@@ -54,16 +83,25 @@ class _RubikCubeGameState extends State<RubikCubeGame>
             });
           } else if (e.isKeyPressed(LogicalKeyboardKey.keyQ)) {
             setState(() {
-              controller.horizontalRotate(0, clockWise: false);
+              controller.rotateBottom(clockWise: false);
             });
           }
           if (e.isKeyPressed(LogicalKeyboardKey.keyD)) {
             setState(() {
-              controller.verticalFaceRotate(0);
+              controller.rotateRight();
             });
           } else if (e.isKeyPressed(LogicalKeyboardKey.keyA)) {
             setState(() {
-              controller.verticalFaceRotate(0, clockWise: false);
+              controller.rotateRight(clockWise: false);
+            });
+          }
+          if (e.isKeyPressed(LogicalKeyboardKey.keyZ)) {
+            setState(() {
+              controller.rotateFront();
+            });
+          } else if (e.isKeyPressed(LogicalKeyboardKey.keyC)) {
+            setState(() {
+              controller.rotateFront(clockWise: false);
             });
           }
         }
@@ -73,6 +111,8 @@ class _RubikCubeGameState extends State<RubikCubeGame>
         builder: (context, _) => RubikCube(
           cubeController: controller,
           horizontalRotateAnimation: horizontalRotateAnimation,
+          faceRotateAnimation: faceRotateAnimation,
+          sideRotateAnimation: sideRotateAnimation,
         ),
       ),
     );
