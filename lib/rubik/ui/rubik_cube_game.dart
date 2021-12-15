@@ -47,7 +47,7 @@ class _RubikCubeGameState extends State<RubikCubeGame>
       focusNode: FocusNode(),
       autofocus: true,
       onKey: (e) {
-        if (e.runtimeType.toString() == 'RawKeyDownEvent') {
+        if (e.runtimeType == RawKeyDownEvent) {
           if (e.isKeyPressed(LogicalKeyboardKey.keyE)) {
             setState(() {
               controller.rotateBottom();
