@@ -18,10 +18,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(),
+      home: const Scaffold(
         backgroundColor: Colors.black,
-        body: const Center(child: RubikCubeGame(cubeSize: 4,)),
+        body: RubikCubeGame(cubeSize: 3,),
       ),
     );
   }

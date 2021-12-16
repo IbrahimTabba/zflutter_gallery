@@ -10,21 +10,27 @@ class RubikCube extends StatefulWidget {
   final Animation horizontalRotateAnimation;
   final Animation faceRotateAnimation;
   final Animation sideRotateAnimation;
+  final Function()? onTap;
+  final Function()? onDoubleTap;
+  final Function(double)? onYRotationChanged;
 
-  const RubikCube(
-      {Key? key,
-      required this.cubeController,
-      required this.horizontalRotateAnimation,
-      required this.faceRotateAnimation,
-      required this.sideRotateAnimation})
-      : super(key: key);
+  const RubikCube({
+    Key? key,
+    required this.cubeController,
+    required this.horizontalRotateAnimation,
+    required this.faceRotateAnimation,
+    required this.sideRotateAnimation,
+    this.onTap,
+    this.onDoubleTap,
+    this.onYRotationChanged,
+  }) : super(key: key);
 
   @override
   _RubikCubeState createState() => _RubikCubeState();
 }
 
 class _RubikCubeState extends State<RubikCube> {
-  final double cubeCellSize = 60;
+  final double cubeCellSize = 50;
   final double cubeCellMargin = 3;
   late final RubikCubitModel cube;
 
@@ -48,6 +54,7 @@ class _RubikCubeState extends State<RubikCube> {
                 return ZGesture(
                   child: _cube(cube),
                   maxXRotation: tau / 12,
+                  onYRotationUpdate: widget.onYRotationChanged,
                 );
               },
             );
@@ -137,20 +144,20 @@ class _RubikCubeState extends State<RubikCube> {
             bottomColor: cell.bottomColor,
             rearColor: cell.backColor,
           ),
-          ZBox(
-            height: cubeCellSize - cubeCellMargin + 2,
-            width: cubeCellSize - cubeCellMargin + 2,
-            depth: cubeCellSize - cubeCellMargin + 2,
-            stroke: 1,
-            fill: false,
-            frontColor: Colors.black,
-            color: Colors.black,
-            topColor: Colors.black,
-            leftColor: Colors.black,
-            rightColor: Colors.black,
-            bottomColor: Colors.black,
-            rearColor: Colors.black,
-          )
+          // ZBox(
+          //   height: cubeCellSize - cubeCellMargin + 2,
+          //   width: cubeCellSize - cubeCellMargin + 2,
+          //   depth: cubeCellSize - cubeCellMargin + 2,
+          //   stroke: 1,
+          //   fill: false,
+          //   frontColor: Colors.black,
+          //   color: Colors.black,
+          //   topColor: Colors.black,
+          //   leftColor: Colors.black,
+          //   rightColor: Colors.black,
+          //   bottomColor: Colors.black,
+          //   rearColor: Colors.black,
+          // )
         ],
       ),
     );

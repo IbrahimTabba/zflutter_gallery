@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:zflutter/zflutter.dart';
@@ -31,47 +33,45 @@ class _RubikCubeGameState extends State<RubikCubeGame>
   late final AnimationController faceRotateController;
   late final CurvedAnimation faceRotateCurve;
 
-
   @override
   void initState() {
     super.initState();
-    horizontalRotateController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
-    horizontalRotateCurve = CurvedAnimation(
-      parent: horizontalRotateController,
-      curve: Curves.linear,
-    );
-    horizontalRotateAnimation =
-        Tween<double>(begin: 0, end: tau / 4).animate(horizontalRotateCurve);
-
-    sideRotateController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
-    sideRotateCurve = CurvedAnimation(
-      parent: sideRotateController,
-      curve: Curves.linear,
-    );
-    sideRotateAnimation =
-        Tween<double>(begin: 0, end: tau / 4).animate(sideRotateCurve);
-
-    faceRotateController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 350));
-    faceRotateCurve = CurvedAnimation(
-      parent: faceRotateController,
-      curve: Curves.linear,
-    );
-    faceRotateAnimation =
-        Tween<double>(begin: 0, end: tau / 4).animate(faceRotateCurve);
-
+    _initAnimations();
     controller = CubeController(
-      cube: RubikCubitModel(widget.cubeSize),
-      horizontalRotateController: horizontalRotateController,
-      faceRotateController: faceRotateController,
-      sideRotateController: sideRotateController
-    );
+        cube: RubikCubitModel(widget.cubeSize),
+        horizontalRotateController: horizontalRotateController,
+        faceRotateController: faceRotateController,
+        sideRotateController: sideRotateController);
   }
 
   @override
   Widget build(BuildContext context) {
+    double cubeSize;
+    if(kIsWeb) {
+      cubeSize = MediaQuery.of(context).size.height * 0.40;
+    } else {
+      cubeSize = MediaQuery.of(context).size.width * 0.50;
+    }
+    return _gameGestures(context,
+        child: SizedBox(
+          height: cubeSize,
+          width: cubeSize,
+          child: Center(
+            child: ChangeNotifierProvider.value(
+              value: controller,
+              builder: (context, _) => RubikCube(
+                cubeController: controller,
+                horizontalRotateAnimation: horizontalRotateAnimation,
+                faceRotateAnimation: faceRotateAnimation,
+                sideRotateAnimation: sideRotateAnimation,
+                onYRotationChanged: (rotation){
+                  controller.rotationOffset = rotation;
+                },
+              ),
+            ),
+          ),
+        ),
+        size: cubeSize);
     return RawKeyboardListener(
       focusNode: FocusNode(),
       autofocus: true,
@@ -106,15 +106,159 @@ class _RubikCubeGameState extends State<RubikCubeGame>
           }
         }
       },
-      child: ChangeNotifierProvider.value(
-        value: controller,
-        builder: (context, _) => RubikCube(
-          cubeController: controller,
-          horizontalRotateAnimation: horizontalRotateAnimation,
-          faceRotateAnimation: faceRotateAnimation,
-          sideRotateAnimation: sideRotateAnimation,
-        ),
+      child: Column(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onHorizontalDragEnd: (details) {
+                controller.rotateTop(
+                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
+              },
+              onVerticalDragEnd: (details) {
+                controller.rotateRight(
+                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
+              },
+              onTap: () {
+                controller.rotateFront();
+              },
+              onDoubleTap: () {
+                controller.rotateFront(clockWise: false);
+              },
+            ),
+          ),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.40,
+            color: Colors.grey[400],
+            child: Center(
+              child: ChangeNotifierProvider.value(
+                value: controller,
+                builder: (context, _) => RubikCube(
+                  cubeController: controller,
+                  horizontalRotateAnimation: horizontalRotateAnimation,
+                  faceRotateAnimation: faceRotateAnimation,
+                  sideRotateAnimation: sideRotateAnimation,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onHorizontalDragEnd: (details) {
+                controller.rotateBottom(
+                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
+              },
+              onVerticalDragEnd: (details) {
+                controller.rotateRight(
+                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
+              },
+              onTap: () {
+                controller.rotateFront();
+              },
+              onDoubleTap: () {
+                controller.rotateFront(clockWise: false);
+              },
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  _gameGestures(
+    BuildContext context, {
+    required Widget child,
+    required double size,
+  }) {
+    return Stack(
+      children: [
+        Center(
+          child: GestureDetector(
+              onTap: () {
+                controller.rotateFront();
+              },
+              onDoubleTap: () {
+                controller.rotateFront(clockWise: false);
+              },
+              child: child),
+        ),
+        Column(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onHorizontalDragEnd: (details) {
+                  controller.rotateTop(
+                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
+                },
+              ),
+            ),
+            SizedBox(
+              width: size,
+              height: size,
+            ),
+            Expanded(
+              child: GestureDetector(
+                onHorizontalDragEnd: (details) {
+                  controller.rotateBottom(
+                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
+                },
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onVerticalDragEnd: (details) {
+                  controller.rotateLeft(
+                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
+                },
+              ),
+            ),
+            SizedBox(
+              width: size,
+              height: size,
+            ),
+            Expanded(
+              child: GestureDetector(
+                onVerticalDragEnd: (details) {
+                  controller.rotateRight(
+                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  _initAnimations(){
+    horizontalRotateController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 350));
+    horizontalRotateCurve = CurvedAnimation(
+      parent: horizontalRotateController,
+      curve: Curves.easeInOut,
+    );
+    horizontalRotateAnimation =
+        Tween<double>(begin: 0, end: tau / 4).animate(horizontalRotateCurve);
+
+    sideRotateController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 350));
+    sideRotateCurve = CurvedAnimation(
+      parent: sideRotateController,
+      curve: Curves.easeInOut,
+    );
+    sideRotateAnimation =
+        Tween<double>(begin: 0, end: tau / 4).animate(sideRotateCurve);
+
+    faceRotateController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 350));
+    faceRotateCurve = CurvedAnimation(
+      parent: faceRotateController,
+      curve: Curves.easeInOut,
+    );
+    faceRotateAnimation =
+        Tween<double>(begin: 0, end: tau / 4).animate(faceRotateCurve);
   }
 }
