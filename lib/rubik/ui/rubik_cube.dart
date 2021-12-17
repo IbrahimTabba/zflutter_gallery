@@ -13,6 +13,8 @@ class RubikCube extends StatefulWidget {
   final Function()? onTap;
   final Function()? onDoubleTap;
   final Function(double)? onYRotationChanged;
+  final double cubeCellSize;
+
 
   const RubikCube({
     Key? key,
@@ -20,6 +22,7 @@ class RubikCube extends StatefulWidget {
     required this.horizontalRotateAnimation,
     required this.faceRotateAnimation,
     required this.sideRotateAnimation,
+    required this.cubeCellSize,
     this.onTap,
     this.onDoubleTap,
     this.onYRotationChanged,
@@ -30,13 +33,14 @@ class RubikCube extends StatefulWidget {
 }
 
 class _RubikCubeState extends State<RubikCube> {
-  final double cubeCellSize = 50;
+  late final double cubeCellSize;
   final double cubeCellMargin = 3;
   late final RubikCubitModel cube;
 
   @override
   void initState() {
     super.initState();
+    cubeCellSize = widget.cubeCellSize;
     cube = widget.cubeController.cube;
   }
 

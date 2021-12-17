@@ -33,6 +33,9 @@ class _RubikCubeGameState extends State<RubikCubeGame>
   late final AnimationController faceRotateController;
   late final CurvedAnimation faceRotateCurve;
 
+  final double cubeCellSize = 50;
+
+
   @override
   void initState() {
     super.initState();
@@ -46,12 +49,7 @@ class _RubikCubeGameState extends State<RubikCubeGame>
 
   @override
   Widget build(BuildContext context) {
-    double cubeSize;
-    if(kIsWeb) {
-      cubeSize = MediaQuery.of(context).size.height * 0.40;
-    } else {
-      cubeSize = MediaQuery.of(context).size.width * 0.50;
-    }
+    double cubeSize = (cubeCellSize * (widget.cubeSize+1));
     return _gameGestures(context,
         child: SizedBox(
           height: cubeSize,
@@ -64,6 +62,7 @@ class _RubikCubeGameState extends State<RubikCubeGame>
                 horizontalRotateAnimation: horizontalRotateAnimation,
                 faceRotateAnimation: faceRotateAnimation,
                 sideRotateAnimation: sideRotateAnimation,
+                cubeCellSize: cubeCellSize,
                 onYRotationChanged: (rotation){
                   controller.rotationOffset = rotation;
                 },
@@ -72,96 +71,96 @@ class _RubikCubeGameState extends State<RubikCubeGame>
           ),
         ),
         size: cubeSize);
-    return RawKeyboardListener(
-      focusNode: FocusNode(),
-      autofocus: true,
-      onKey: (e) {
-        if (e.runtimeType == RawKeyDownEvent) {
-          if (e.isKeyPressed(LogicalKeyboardKey.keyE)) {
-            setState(() {
-              controller.rotateBottom();
-            });
-          } else if (e.isKeyPressed(LogicalKeyboardKey.keyQ)) {
-            setState(() {
-              controller.rotateBottom(clockWise: false);
-            });
-          }
-          if (e.isKeyPressed(LogicalKeyboardKey.keyD)) {
-            setState(() {
-              controller.rotateRight();
-            });
-          } else if (e.isKeyPressed(LogicalKeyboardKey.keyA)) {
-            setState(() {
-              controller.rotateRight(clockWise: false);
-            });
-          }
-          if (e.isKeyPressed(LogicalKeyboardKey.keyZ)) {
-            setState(() {
-              controller.rotateFront();
-            });
-          } else if (e.isKeyPressed(LogicalKeyboardKey.keyC)) {
-            setState(() {
-              controller.rotateFront(clockWise: false);
-            });
-          }
-        }
-      },
-      child: Column(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onHorizontalDragEnd: (details) {
-                controller.rotateTop(
-                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
-              },
-              onVerticalDragEnd: (details) {
-                controller.rotateRight(
-                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
-              },
-              onTap: () {
-                controller.rotateFront();
-              },
-              onDoubleTap: () {
-                controller.rotateFront(clockWise: false);
-              },
-            ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.40,
-            color: Colors.grey[400],
-            child: Center(
-              child: ChangeNotifierProvider.value(
-                value: controller,
-                builder: (context, _) => RubikCube(
-                  cubeController: controller,
-                  horizontalRotateAnimation: horizontalRotateAnimation,
-                  faceRotateAnimation: faceRotateAnimation,
-                  sideRotateAnimation: sideRotateAnimation,
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onHorizontalDragEnd: (details) {
-                controller.rotateBottom(
-                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
-              },
-              onVerticalDragEnd: (details) {
-                controller.rotateRight(
-                    clockWise: (details.primaryVelocity ?? 0.0) < 0);
-              },
-              onTap: () {
-                controller.rotateFront();
-              },
-              onDoubleTap: () {
-                controller.rotateFront(clockWise: false);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    // return RawKeyboardListener(
+    //   focusNode: FocusNode(),
+    //   autofocus: true,
+    //   onKey: (e) {
+    //     if (e.runtimeType == RawKeyDownEvent) {
+    //       if (e.isKeyPressed(LogicalKeyboardKey.keyE)) {
+    //         setState(() {
+    //           controller.rotateBottom();
+    //         });
+    //       } else if (e.isKeyPressed(LogicalKeyboardKey.keyQ)) {
+    //         setState(() {
+    //           controller.rotateBottom(clockWise: false);
+    //         });
+    //       }
+    //       if (e.isKeyPressed(LogicalKeyboardKey.keyD)) {
+    //         setState(() {
+    //           controller.rotateRight();
+    //         });
+    //       } else if (e.isKeyPressed(LogicalKeyboardKey.keyA)) {
+    //         setState(() {
+    //           controller.rotateRight(clockWise: false);
+    //         });
+    //       }
+    //       if (e.isKeyPressed(LogicalKeyboardKey.keyZ)) {
+    //         setState(() {
+    //           controller.rotateFront();
+    //         });
+    //       } else if (e.isKeyPressed(LogicalKeyboardKey.keyC)) {
+    //         setState(() {
+    //           controller.rotateFront(clockWise: false);
+    //         });
+    //       }
+    //     }
+    //   },
+    //   child: Column(
+    //     children: [
+    //       Expanded(
+    //         child: GestureDetector(
+    //           onHorizontalDragEnd: (details) {
+    //             controller.rotateTop(
+    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
+    //           },
+    //           onVerticalDragEnd: (details) {
+    //             controller.rotateRight(
+    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
+    //           },
+    //           onTap: () {
+    //             controller.rotateFront();
+    //           },
+    //           onDoubleTap: () {
+    //             controller.rotateFront(clockWise: false);
+    //           },
+    //         ),
+    //       ),
+    //       Container(
+    //         height: MediaQuery.of(context).size.height * 0.40,
+    //         color: Colors.grey[400],
+    //         child: Center(
+    //           child: ChangeNotifierProvider.value(
+    //             value: controller,
+    //             builder: (context, _) => RubikCube(
+    //               cubeController: controller,
+    //               horizontalRotateAnimation: horizontalRotateAnimation,
+    //               faceRotateAnimation: faceRotateAnimation,
+    //               sideRotateAnimation: sideRotateAnimation,
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       Expanded(
+    //         child: GestureDetector(
+    //           onHorizontalDragEnd: (details) {
+    //             controller.rotateBottom(
+    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
+    //           },
+    //           onVerticalDragEnd: (details) {
+    //             controller.rotateRight(
+    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
+    //           },
+    //           onTap: () {
+    //             controller.rotateFront();
+    //           },
+    //           onDoubleTap: () {
+    //             controller.rotateFront(clockWise: false);
+    //           },
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   _gameGestures(
