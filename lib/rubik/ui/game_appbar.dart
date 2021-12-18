@@ -15,7 +15,8 @@ class GameAppbar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.transparent,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       centerTitle: true,
-      title: controller.gameState == GameState.started
+      title: controller.gameState == GameState.started ||
+              controller.gameState == GameState.win
           ? StreamBuilder<int>(
               stream: controller.timerStream,
               initialData: 0,

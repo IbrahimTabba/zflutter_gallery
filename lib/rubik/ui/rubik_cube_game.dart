@@ -113,6 +113,15 @@ class _RubikCubeGameState extends State<RubikCubeGame>
                   controller.resumeGame();
                 },
               ),
+            if (controller.gameState == GameState.win)
+              _gameAction(
+                icon: Icons.replay_circle_filled,
+                text: 'Retry',
+                action: () async {
+                  controller.startGame();
+                  controller.shuffle();
+                },
+              ),
           ],
         ),
       ),
