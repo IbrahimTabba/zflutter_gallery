@@ -120,6 +120,45 @@ class RubikCubitModel {
       }
     }
   }
+
+  void shuffle(){
+    const moves = 10;
+    final randGenerator = Random();
+    for(int move = 0 ; move < moves ; move++){
+      final layerMove = randGenerator.nextInt(size-1);
+      final faceMove = randGenerator.nextInt(size-1);
+      final sideMove = randGenerator.nextInt(size-1);
+      horizontalRotate(layerMove , clockWise: randGenerator.nextBool());
+      verticalSideRotate(sideMove , clockWise: randGenerator.nextBool());
+      verticalFaceRotate(faceMove , clockWise: randGenerator.nextBool());
+    }
+  }
+
+  bool get didWin{
+    for(int i = 0 ; i < size ; i++){
+      for(int j = 0 ; j < size ; j++){
+        if(cells[0][i][j].bottomColor != RubikCubeColors.bottomColor) {
+          return false;
+        }
+        if(cells[size-1][i][j].topColor != RubikCubeColors.topColor) {
+          return false;
+        }
+        if(cells[i][0][j].leftColor != RubikCubeColors.leftColor) {
+          return false;
+        }
+        if(cells[i][size-1][j].rightColor != RubikCubeColors.rightColor) {
+          return false;
+        }
+        if(cells[i][j][0].frontColor != RubikCubeColors.frontColor) {
+          return false;
+        }
+        if(cells[i][j][size-1].backColor != RubikCubeColors.backColor) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 }
 
 class RubikCubeColors {

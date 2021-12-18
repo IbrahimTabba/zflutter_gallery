@@ -1,12 +1,13 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zflutter/zflutter.dart';
 import 'package:zflutter_gallery/rubik/controllers/cube_controller.dart';
+import 'package:zflutter_gallery/rubik/input/gesture_input.dart';
 import 'package:zflutter_gallery/rubik/models/rubik_cube_model.dart';
+import 'package:zflutter_gallery/rubik/ui/game_appbar.dart';
 import 'package:zflutter_gallery/rubik/ui/rubik_cube.dart';
+import 'package:zflutter_gallery/rubik/ui/tutorial/game_tutorial.dart';
 
 class RubikCubeGame extends StatefulWidget {
   final int cubeSize;
@@ -35,7 +36,6 @@ class _RubikCubeGameState extends State<RubikCubeGame>
 
   final double cubeCellSize = 50;
 
-
   @override
   void initState() {
     super.initState();
@@ -49,190 +49,77 @@ class _RubikCubeGameState extends State<RubikCubeGame>
 
   @override
   Widget build(BuildContext context) {
-    double cubeSize = (cubeCellSize * (widget.cubeSize+1));
-    return _gameGestures(context,
-        child: SizedBox(
-          height: cubeSize,
-          width: cubeSize,
-          child: Center(
-            child: ChangeNotifierProvider.value(
-              value: controller,
-              builder: (context, _) => RubikCube(
-                cubeController: controller,
-                horizontalRotateAnimation: horizontalRotateAnimation,
-                faceRotateAnimation: faceRotateAnimation,
-                sideRotateAnimation: sideRotateAnimation,
-                cubeCellSize: cubeCellSize,
-                onYRotationChanged: (rotation){
-                  controller.rotationOffset = rotation;
-                },
+    double cubeSize = (cubeCellSize * (widget.cubeSize + 1));
+    return ValueListenableBuilder(
+      valueListenable: controller,
+      builder: (context, cube, _) => Scaffold(
+        backgroundColor: Colors.black,
+        appBar: GameAppbar(
+          controller: controller,
+        ),
+        extendBodyBehindAppBar: true,
+        body: Stack(
+          children: [
+            GameGestureInput(
+              active: controller.gameState == GameState.started &&
+                  controller.gameState != GameState.paused &&
+                  controller.gameState != GameState.win,
+              controller: controller,
+              gameSize: cubeSize,
+              child: SizedBox(
+                height: cubeSize,
+                width: cubeSize,
+                child: Center(
+                  child: RubikCube(
+                    controller: controller,
+                    horizontalRotateAnimation: horizontalRotateAnimation,
+                    faceRotateAnimation: faceRotateAnimation,
+                    sideRotateAnimation: sideRotateAnimation,
+                    cubeCellSize: cubeCellSize,
+                    onYRotationChanged: (rotation) {
+                      controller.rotationOffset = rotation;
+                    },
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        size: cubeSize);
-    // return RawKeyboardListener(
-    //   focusNode: FocusNode(),
-    //   autofocus: true,
-    //   onKey: (e) {
-    //     if (e.runtimeType == RawKeyDownEvent) {
-    //       if (e.isKeyPressed(LogicalKeyboardKey.keyE)) {
-    //         setState(() {
-    //           controller.rotateBottom();
-    //         });
-    //       } else if (e.isKeyPressed(LogicalKeyboardKey.keyQ)) {
-    //         setState(() {
-    //           controller.rotateBottom(clockWise: false);
-    //         });
-    //       }
-    //       if (e.isKeyPressed(LogicalKeyboardKey.keyD)) {
-    //         setState(() {
-    //           controller.rotateRight();
-    //         });
-    //       } else if (e.isKeyPressed(LogicalKeyboardKey.keyA)) {
-    //         setState(() {
-    //           controller.rotateRight(clockWise: false);
-    //         });
-    //       }
-    //       if (e.isKeyPressed(LogicalKeyboardKey.keyZ)) {
-    //         setState(() {
-    //           controller.rotateFront();
-    //         });
-    //       } else if (e.isKeyPressed(LogicalKeyboardKey.keyC)) {
-    //         setState(() {
-    //           controller.rotateFront(clockWise: false);
-    //         });
-    //       }
-    //     }
-    //   },
-    //   child: Column(
-    //     children: [
-    //       Expanded(
-    //         child: GestureDetector(
-    //           onHorizontalDragEnd: (details) {
-    //             controller.rotateTop(
-    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
-    //           },
-    //           onVerticalDragEnd: (details) {
-    //             controller.rotateRight(
-    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
-    //           },
-    //           onTap: () {
-    //             controller.rotateFront();
-    //           },
-    //           onDoubleTap: () {
-    //             controller.rotateFront(clockWise: false);
-    //           },
-    //         ),
-    //       ),
-    //       Container(
-    //         height: MediaQuery.of(context).size.height * 0.40,
-    //         color: Colors.grey[400],
-    //         child: Center(
-    //           child: ChangeNotifierProvider.value(
-    //             value: controller,
-    //             builder: (context, _) => RubikCube(
-    //               cubeController: controller,
-    //               horizontalRotateAnimation: horizontalRotateAnimation,
-    //               faceRotateAnimation: faceRotateAnimation,
-    //               sideRotateAnimation: sideRotateAnimation,
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       Expanded(
-    //         child: GestureDetector(
-    //           onHorizontalDragEnd: (details) {
-    //             controller.rotateBottom(
-    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
-    //           },
-    //           onVerticalDragEnd: (details) {
-    //             controller.rotateRight(
-    //                 clockWise: (details.primaryVelocity ?? 0.0) < 0);
-    //           },
-    //           onTap: () {
-    //             controller.rotateFront();
-    //           },
-    //           onDoubleTap: () {
-    //             controller.rotateFront(clockWise: false);
-    //           },
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
-  }
+            if (controller.gameState == GameState.notStarted)
+              _gameAction(
+                icon: Icons.play_circle,
+                text: 'Start',
+                action: () async {
+                  if(!(GetIt.I.get<SharedPreferences>().getBool('tutorial_shown')??false)){
+                    final result = await showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return const GameTutorial();
+                        });
+                    if(!((result != null && result is bool && result))) {
+                      return;
+                    }
+                    GetIt.I.get<SharedPreferences>().setBool('tutorial_shown',true);
+                  }
+                  controller.startGame();
+                  controller.shuffle();
 
-  _gameGestures(
-    BuildContext context, {
-    required Widget child,
-    required double size,
-  }) {
-    return Stack(
-      children: [
-        Center(
-          child: GestureDetector(
-              onTap: () {
-                controller.rotateFront();
-              },
-              onDoubleTap: () {
-                controller.rotateFront(clockWise: false);
-              },
-              child: child),
-        ),
-        Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onHorizontalDragEnd: (details) {
-                  controller.rotateTop(
-                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
                 },
               ),
-            ),
-            SizedBox(
-              width: size,
-              height: size,
-            ),
-            Expanded(
-              child: GestureDetector(
-                onHorizontalDragEnd: (details) {
-                  controller.rotateBottom(
-                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
+            if (controller.gameState == GameState.paused)
+              _gameAction(
+                icon: Icons.play_circle,
+                text: 'Resume',
+                action: () {
+                  controller.resumeGame();
                 },
               ),
-            ),
           ],
         ),
-        Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onVerticalDragEnd: (details) {
-                  controller.rotateLeft(
-                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
-                },
-              ),
-            ),
-            SizedBox(
-              width: size,
-              height: size,
-            ),
-            Expanded(
-              child: GestureDetector(
-                onVerticalDragEnd: (details) {
-                  controller.rotateRight(
-                      clockWise: (details.primaryVelocity ?? 0.0) < 0);
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 
-  _initAnimations(){
+  _initAnimations() {
     horizontalRotateController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 350));
     horizontalRotateCurve = CurvedAnimation(
@@ -259,5 +146,51 @@ class _RubikCubeGameState extends State<RubikCubeGame>
     );
     faceRotateAnimation =
         Tween<double>(begin: 0, end: tau / 4).animate(faceRotateCurve);
+  }
+
+  Widget _gameAction(
+      {required IconData icon,
+      required String text,
+      required Function()? action}) {
+    return SafeArea(
+      top: false,
+      left: false,
+      right: false,
+      bottom: true,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 38),
+          child: InkWell(
+            onTap: action,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 34,
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  text,
+                  style: const TextStyle(color: Colors.white, fontSize: 48),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
   }
 }

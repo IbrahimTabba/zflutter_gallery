@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zflutter/zflutter.dart';
-
-import '3d_gesture.dart';
+import 'gesture_3d.dart';
 
 class WallE extends StatefulWidget {
   const WallE({Key? key}) : super(key: key);

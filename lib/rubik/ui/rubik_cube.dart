@@ -1,30 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:zflutter/zflutter.dart';
-import 'package:zflutter_gallery/3d_gesture.dart';
+import 'package:zflutter_gallery/gesture_3d.dart';
 import 'package:zflutter_gallery/rubik/controllers/cube_controller.dart';
 import 'package:zflutter_gallery/rubik/models/rubik_cell.dart';
 import 'package:zflutter_gallery/rubik/models/rubik_cube_model.dart';
 
 class RubikCube extends StatefulWidget {
-  final CubeController cubeController;
   final Animation horizontalRotateAnimation;
   final Animation faceRotateAnimation;
   final Animation sideRotateAnimation;
-  final Function()? onTap;
-  final Function()? onDoubleTap;
   final Function(double)? onYRotationChanged;
   final double cubeCellSize;
+  final CubeController controller;
 
 
   const RubikCube({
     Key? key,
-    required this.cubeController,
     required this.horizontalRotateAnimation,
     required this.faceRotateAnimation,
     required this.sideRotateAnimation,
     required this.cubeCellSize,
-    this.onTap,
-    this.onDoubleTap,
+    required this.controller,
     this.onYRotationChanged,
   }) : super(key: key);
 
@@ -35,13 +31,11 @@ class RubikCube extends StatefulWidget {
 class _RubikCubeState extends State<RubikCube> {
   late final double cubeCellSize;
   final double cubeCellMargin = 3;
-  late final RubikCubitModel cube;
 
   @override
   void initState() {
     super.initState();
     cubeCellSize = widget.cubeCellSize;
-    cube = widget.cubeController.cube;
   }
 
   @override
@@ -56,8 +50,10 @@ class _RubikCubeState extends State<RubikCube> {
               animation: widget.faceRotateAnimation,
               builder: (BuildContext context, Widget? child) {
                 return ZGesture(
-                  child: _cube(cube),
+                  child: _cube(widget.controller),
                   maxXRotation: tau / 12,
+                  initialXRotation: -tau / 12,
+                  initialYRotation: -tau / 8,
                   onYRotationUpdate: widget.onYRotationChanged,
                 );
               },
@@ -68,21 +64,22 @@ class _RubikCubeState extends State<RubikCube> {
     );
   }
 
-  ZWidget _cube(RubikCubitModel cube) {
+  ZWidget _cube(CubeController cubeController) {
+    final cube = cubeController.cube;
     return ZGroup(
       children: [
         ZPositioned(
           rotate: ZVector.only(
             y: widget.horizontalRotateAnimation.value *
-                ((widget.cubeController.targetMove?.clockWise ?? true)
+                ((cubeController.targetMove?.clockWise ?? true)
                     ? 1.0
                     : -1.0),
             x: widget.sideRotateAnimation.value *
-                ((widget.cubeController.targetMove?.clockWise ?? true)
+                ((cubeController.targetMove?.clockWise ?? true)
                     ? 1.0
                     : -1.0),
             z: widget.faceRotateAnimation.value *
-                ((widget.cubeController.targetMove?.clockWise ?? true)
+                ((cubeController.targetMove?.clockWise ?? true)
                     ? 1.0
                     : -1.0),
           ),
@@ -91,16 +88,16 @@ class _RubikCubeState extends State<RubikCube> {
               for (int i = 0; i < cube.cells.length; i++)
                 for (int j = 0; j < cube.cells[i].length; j++)
                   for (int k = 0; k < cube.cells[i][j].length; k++)
-                    if (isTargetFace(widget.cubeController.targetMove, i, j, k))
-                      _cubeCell(i, j, k, cube.cells[i][j][k])
+                    if (isTargetFace(cubeController.targetMove, i, j, k))
+                      _cubeCell(i, j, k, cube.cells[i][j][k],cube)
             ],
           ),
         ),
         for (int i = 0; i < cube.cells.length; i++)
           for (int j = 0; j < cube.cells[i].length; j++)
             for (int k = 0; k < cube.cells[i][j].length; k++)
-              if (!isTargetFace(widget.cubeController.targetMove, i, j, k))
-                _cubeCell(i, j, k, cube.cells[i][j][k])
+              if (!isTargetFace(cubeController.targetMove, i, j, k))
+                _cubeCell(i, j, k, cube.cells[i][j][k],cube)
       ],
     );
   }
@@ -120,8 +117,8 @@ class _RubikCubeState extends State<RubikCube> {
     return false;
   }
 
-  Widget _cubeCell(int i, int j, int k, CubeCell cell) {
-    if (shouldIgnoreCell(i, j, k)) {
+  Widget _cubeCell(int i, int j, int k, CubeCell cell , RubikCubitModel cube) {
+    if (shouldIgnoreCell(i, j, k,cube)) {
       return ZGroup(
         children: const [],
       );
@@ -167,7 +164,7 @@ class _RubikCubeState extends State<RubikCube> {
     );
   }
 
-  bool shouldIgnoreCell(int i, int j, int k) {
+  bool shouldIgnoreCell(int i, int j, int k , RubikCubitModel cube) {
     if (i != 0 && i != cube.size - 1) {
       if (j != 0 && j != cube.size - 1 && k != 0 && k != cube.size - 1) {
         return true;

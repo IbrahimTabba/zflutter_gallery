@@ -1,17 +1,20 @@
 import 'package:flutter/cupertino.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:zflutter/zflutter.dart';
 import 'package:zflutter_gallery/rubik/models/rubik_cube_model.dart';
 
-class CubeController extends ChangeNotifier {
+class CubeController extends ValueNotifier<RubikCubitModel> {
   final RubikCubitModel cube;
   final AnimationController horizontalRotateController;
   final AnimationController faceRotateController;
   final AnimationController sideRotateController;
-
+  late final StopWatchTimer _stopWatchTimer;
   TargetMove? targetMove;
   double rotationOffset = 0.0;
   double get rotationsCount => rotationOffset/(tau/4);
+  late GameState gameState;
+  Stream<int> get timerStream => _stopWatchTimer.rawTime;
 
   final lock = Lock();
 
@@ -20,7 +23,10 @@ class CubeController extends ChangeNotifier {
     required this.horizontalRotateController,
     required this.faceRotateController,
     required this.sideRotateController,
-  });
+  }):super(cube){
+    _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp,);
+    gameState = GameState.notStarted;
+  }
 
   Future<void> rotateLayer({required int layer, bool clockWise = true}) async {
     await lock.synchronized(()async{
@@ -33,6 +39,7 @@ class CubeController extends ChangeNotifier {
       await horizontalRotateController.forward();
       horizontalRotateController.reset();
       horizontalRotate(layer, clockWise: clockWise);
+      validate();
     });
   }
 
@@ -48,6 +55,7 @@ class CubeController extends ChangeNotifier {
       await sideRotateController.forward();
       sideRotateController.reset();
       verticalSideRotate(side, clockWise: clockWise);
+      validate();
     });
   }
 
@@ -62,6 +70,7 @@ class CubeController extends ChangeNotifier {
       await faceRotateController.forward();
       faceRotateController.reset();
       verticalFaceRotate(face, clockWise: clockWise);
+      validate();
     });
   }
 
@@ -131,6 +140,51 @@ class CubeController extends ChangeNotifier {
     cube.verticalSideRotate(side, clockWise: clockWise);
     notifyListeners();
   }
+
+  void shuffle(){
+    cube.shuffle();
+    _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+    notifyListeners();
+  }
+
+  void startGame(){
+    gameState = GameState.started;
+    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+    notifyListeners();
+  }
+
+  void pauseGame(){
+    gameState = GameState.paused;
+    _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+    notifyListeners();
+  }
+
+  void resumeGame(){
+    gameState = GameState.started;
+    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+    notifyListeners();
+  }
+
+  void validate(){
+    final win = cube.didWin;
+    if(win){
+      _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+      gameState = GameState.win;
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    horizontalRotateController.dispose();
+    faceRotateController.dispose();
+    sideRotateController.dispose();
+    _stopWatchTimer.dispose();
+  }
+
+
 }
 
 class TargetMove {
@@ -146,3 +200,7 @@ class TargetMove {
 }
 
 enum CubeAxis { horizontal, vertical, side }
+
+enum GameState{
+  notStarted , started , paused , win
+}

@@ -4,17 +4,17 @@ import 'package:zflutter/zflutter.dart';
 class ZGesture extends StatefulWidget {
   final Widget child;
   final double? maxXRotation;
+  final double? initialXRotation;
+  final double? initialYRotation;
   final Function(double)? onYRotationUpdate;
-  final Function()? onTap;
-  final Function()? onDoubleTap;
 
   const ZGesture({
     Key? key,
     required this.child,
     this.maxXRotation,
     this.onYRotationUpdate,
-    this.onTap,
-    this.onDoubleTap,
+    this.initialXRotation,
+    this.initialYRotation,
   }) : super(key: key);
 
   @override
@@ -24,6 +24,17 @@ class ZGesture extends StatefulWidget {
 class _ZGestureState extends State<ZGesture> {
   double _xRotation = 0.0;
   double _yRotation = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget.initialXRotation!=null) {
+      _xRotation+=widget.initialXRotation!;
+    }
+    if(widget.initialYRotation!=null) {
+      _yRotation+=widget.initialYRotation!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,21 +53,6 @@ class _ZGestureState extends State<ZGesture> {
       onPanEnd: (details) {
         widget.onYRotationUpdate?.call(_yRotation % tau);
       },
-      onTap: widget.onTap,
-      onDoubleTap: widget.onDoubleTap,
-//      onVerticalDragUpdate: (val){
-//        setState(() {
-//          if(val.delta.dy<0.0){_xRotation+=0.025;}
-//          else{_xRotation-=0.025;}
-//
-//        });
-//      },
-//      onHorizontalDragUpdate: (val){
-//        setState(() {
-//          if(val.delta.dx<0.0){_yRotation+=0.025;}
-//          else{_yRotation-=0.025;}
-//        });
-//      },
       child: ZIllustration(
         children: [
           ZPositioned(
