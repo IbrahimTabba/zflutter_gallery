@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zflutter/zflutter.dart';
 import 'package:zflutter_gallery/rubik/controllers/cube_controller.dart';
 import 'package:zflutter_gallery/rubik/input/gesture_input.dart';
@@ -88,21 +90,25 @@ class _RubikCubeGameState extends State<RubikCubeGame>
                 icon: Icons.play_circle,
                 text: 'Start',
                 action: () async {
-                  if(!(GetIt.I.get<SharedPreferences>().getBool('tutorial_shown')??false)){
+                  if (!(GetIt.I
+                      .get<SharedPreferences>()
+                      .getBool('tutorial_shown') ??
+                      false)) {
                     final result = await showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (context) {
                           return const GameTutorial();
                         });
-                    if(!((result != null && result is bool && result))) {
+                    if (!((result != null && result is bool && result))) {
                       return;
                     }
-                    GetIt.I.get<SharedPreferences>().setBool('tutorial_shown',true);
+                    GetIt.I
+                        .get<SharedPreferences>()
+                        .setBool('tutorial_shown', true);
                   }
                   controller.startGame();
                   controller.shuffle();
-
                 },
               ),
             if (controller.gameState == GameState.paused)
@@ -122,6 +128,20 @@ class _RubikCubeGameState extends State<RubikCubeGame>
                   controller.shuffle();
                 },
               ),
+            if (kIsWeb)
+              Align(
+                alignment: AlignmentDirectional.bottomStart,
+                child: InkWell(
+                  onTap: () async {
+                    if (await canLaunch(
+                        'https://play.google.com/store/apps/details?id=com.ibrahim.zrubikscube')) {
+                      launch(
+                          'https://play.google.com/store/apps/details?id=com.ibrahim.zrubikscube');
+                    }
+                  },
+                  child: SizedBox(width: 200,child: Image.asset('assets/images/google-play-badge.png')),
+                ),
+              )
           ],
         ),
       ),
@@ -159,8 +179,8 @@ class _RubikCubeGameState extends State<RubikCubeGame>
 
   Widget _gameAction(
       {required IconData icon,
-      required String text,
-      required Function()? action}) {
+        required String text,
+        required Function()? action}) {
     return SafeArea(
       top: false,
       left: false,

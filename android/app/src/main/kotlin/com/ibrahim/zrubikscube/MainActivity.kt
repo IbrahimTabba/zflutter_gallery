@@ -1,4 +1,4 @@
-package com.example.zflutter_gallery
+package com.ibrahim.zrubikscube
 
 import io.flutter.embedding.android.FlutterActivity
 

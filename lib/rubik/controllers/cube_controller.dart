@@ -142,7 +142,7 @@ class CubeController extends ValueNotifier<RubikCubitModel> {
   }
 
   void shuffle(){
-    //cube.shuffle();
+    cube.shuffle();
     _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
     _stopWatchTimer.onExecute.add(StopWatchExecute.start);
     notifyListeners();
