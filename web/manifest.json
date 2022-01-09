@@ -1,0 +1,14 @@
+{
+    "name": "ZRubik's Cube",
+    "short_name": "ZRubik's Cube",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Simple Rubik's Cube game made with flutter",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+
+    ]
+}
