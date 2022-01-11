@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zflutter/zflutter.dart';
-import 'package:zflutter_gallery/gesture_3d.dart';
+import 'package:zflutter_gallery/3d_widgets/gesture_3d.dart';
 import 'package:zflutter_gallery/rubik/controllers/cube_controller.dart';
 import 'package:zflutter_gallery/rubik/models/rubik_cell.dart';
 import 'package:zflutter_gallery/rubik/models/rubik_cube_model.dart';
