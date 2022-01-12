@@ -1,16 +1,12 @@
-# zflutter_gallery
+# Zflutter Gallery
 
-A new Flutter project.
+Zflutter gallery is a project that gathers all awesome 3d apps made with [Zflutter](https://pub.dev/packages/zflutter)
 
-## Getting Started
+> A round, flat and designer-friendly pseudo-3D engine for Flutter
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## 1. ZRubick's Cube
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ZRubic's cube is a basic implementation for NXN Rubik's Cube presented as a game.
+you can try it on [Web](https://zflutter-gallery.web.app/) .
+also it is available on google play [Google Play](https://play.google.com/store/apps/details?id=com.ibrahim.zrubikscube) 
