@@ -146,11 +146,18 @@ class ChessBoard {
   ChessCell? cellAt(ChessCoordinate coordinate) =>
       cells.firstWhereOrNull((cell) => cell.coordinate == coordinate);
 
+  ChessCell? kingCell(ChessPieceColor color){
+    final king = kingPiece(color);
+    return cells.firstWhereOrNull((cell) => cell.coordinate == king?.currentPosition);
+  }
+
+  ChessPiece? kingPiece(ChessPieceColor color) => pieces.firstWhereOrNull((piece) => piece.color == color && piece.type == ChessPieceType.king);
+
   ChessPiece? pieceAt(ChessCoordinate coordinate) =>
       pieces.firstWhereOrNull((piece) => piece.currentPosition == coordinate);
 
   bool cellHasPiece(ChessCoordinate coordinate) {
-    return pieces.any((piece) => piece.currentPosition == coordinate);
+    return pieces.any((piece) => piece.currentPosition == coordinate && !piece.ignored);
   }
 
   bool isValidCoordinate(ChessCoordinate coordinate) =>
@@ -166,9 +173,25 @@ class ChessBoard {
     pieces.removeWhere((piece)=>piece.currentPosition == coordinate);
   }
 
+
+
+  bool isCheckMate(ChessPieceColor color){
+    final enemyPieces = pieces.where((piece)=>piece.color != color).toList();
+    final king = kingPiece(color);
+    for(final piece in enemyPieces){
+      final moves = possibleTargetsForChessPiece(piece);
+      for(final move in moves){
+        if(move.coordinate == king!.currentPosition) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   bool cellHasEnemy(ChessCoordinate target, ChessPieceColor color) {
     final targetPiece = pieceAt(target);
-    return targetPiece != null && targetPiece.color != color;
+    return targetPiece != null && targetPiece.color != color && !targetPiece.ignored;
   }
 
   List<ChessCell> possibleTargetsForChessPiece(ChessPiece piece) {
@@ -233,7 +256,6 @@ class ChessBoard {
           result.add(cellAt(piece.currentPosition.move(0, verticalMove))!);
         }
       }
-
       if (move.canCrossDiameters ?? false) {
         var i = 1;
         var j = 1;
@@ -284,9 +306,11 @@ class ChessBoard {
     return result;
   }
 
-  void clearAllHighlightCells() {
+  void clearAllHighlightCells({forClearKing = true}) {
     for (final cell in cells) {
-      cell.highlightColor = null;
+      if(cell.highlightColor != 0xffff0000 || forClearKing) {
+        cell.highlightColor = null;
+      }
     }
   }
 }

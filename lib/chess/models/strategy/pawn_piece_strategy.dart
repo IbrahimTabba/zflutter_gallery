@@ -15,7 +15,7 @@ class PawnPieceStrategy extends ChessPieceStrategy{
     ],
     conditionalMoves: (ChessPiece piece , ChessBoard board){
       return [
-        if(piece.initialPosition == piece.currentPosition)
+        if(piece.initialPosition == piece.currentPosition && (!board.cellHasEnemy(piece.currentPosition.move(0* (reverse?-1:1),2* (reverse?-1:1)) , piece.color)))
           ChessPieceMove(target: ChessCoordinate(0,2),) * (reverse?-1:1),
         if(board.cellHasEnemy(piece.currentPosition.move(1* (reverse?-1:1),1* (reverse?-1:1)) , piece.color))
           ChessPieceMove(target: ChessCoordinate(1,1),) * (reverse?-1:1),

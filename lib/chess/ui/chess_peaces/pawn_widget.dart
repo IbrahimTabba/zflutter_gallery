@@ -12,13 +12,12 @@ class PawnWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final color = Color(0xff383838);
     return ZGroup(
       children: [
         ChessBottomBase(color: color,height: 40,),
         ZPositioned(
-          translate: ZVector.only(y: -32),
-          rotate: ZVector.only(x: tau/4),
+          translate: const ZVector.only(y: -32),
+          rotate: const ZVector.only(x: tau/4),
           child: ZCircle(
             diameter: 18,
             stroke: 6 * scale,
@@ -26,7 +25,7 @@ class PawnWidget extends StatelessWidget {
           ),
         ),
         ZPositioned(
-          translate: ZVector.only(y: -40),
+          translate: const ZVector.only(y: -40),
           child: ZShape(
             stroke: 20 * scale,
             color: color,

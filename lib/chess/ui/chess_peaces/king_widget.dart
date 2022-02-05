@@ -16,8 +16,8 @@ class KingWidget extends StatelessWidget {
       children: [
         ChessBottomBase(color: color,height: 65,flat: true,diameter: 38,),
         ZPositioned(
-          translate: ZVector.only(y: -80),
-            rotate: ZVector.only(x: -tau/4),
+          translate: const ZVector.only(y: -80),
+            rotate: const ZVector.only(x: -tau/4),
             child: ZCone(
                 diameter: 30,
                 length: 60,
@@ -25,7 +25,7 @@ class KingWidget extends StatelessWidget {
                 backfaceColor: color
             )),
         ZPositioned(
-          translate: ZVector.only(y: -90.0),
+          translate: const ZVector.only(y: -90.0),
           child: ZBox(
             width: 5,
             height: 20,
@@ -34,8 +34,8 @@ class KingWidget extends StatelessWidget {
           ),
         ),
         ZPositioned(
-          translate: ZVector.only(y: -92.5),
-          rotate: ZVector.only(x: tau/4),
+          translate: const ZVector.only(y: -92.5),
+          rotate: const ZVector.only(x: tau/4),
           child: ZBox(
             width: 10,
             height: 5,

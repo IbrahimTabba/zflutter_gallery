@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zflutter_gallery/chess/controller/chess_controller.dart';
+import 'package:zflutter_gallery/chess/models/chess_piece_color.dart';
 
 class ChessGestureInput extends StatelessWidget {
   final ChessController controller;
@@ -16,32 +17,48 @@ class ChessGestureInput extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...List.generate(8,(i)=>
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ...List.generate(8,(j)=>Container(
-                width: cellSize,
-                height: cellSize*0.7,
-                //color: Colors.red.withOpacity(0.5),
-                child: GestureDetector(
-                  onTap: (){
-                    controller.onPressOnCell(i,8-j-1);
-                  },
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.move,
-                    onEnter: (event){
-                      controller.cellHover(i,8-j-1);
-                    },
-                    onExit: (event){
-
-                    },
-                  ),
-                ),
-              ))
-            ],
-          )
-        )
+        ...List.generate(
+            8,
+            (i) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...List.generate(
+                        8,
+                        (j) => SizedBox(
+                              width: cellSize,
+                              height: cellSize * 0.7,
+                              //color: Colors.red.withOpacity(0.5),
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.onPressOnCell(
+                                      controller.currentColorTurn ==
+                                              ChessPieceColor.black
+                                          ? i
+                                          : 8 - i - 1,
+                                      controller.currentColorTurn ==
+                                              ChessPieceColor.black
+                                          ? 8 - j - 1
+                                          : j);
+                                },
+                                child: MouseRegion(
+                                  cursor: SystemMouseCursors.move,
+                                  onEnter: (event) {
+                                    controller.cellHover(
+                                        controller.currentColorTurn ==
+                                                ChessPieceColor.black
+                                            ? i
+                                            : 8 - i - 1,
+                                        controller.currentColorTurn ==
+                                                ChessPieceColor.black
+                                            ? 8 - j - 1
+                                            : j);
+                                  },
+                                  onExit: (event) {},
+                                ),
+                              ),
+                            ))
+                  ],
+                ))
       ],
     );
   }

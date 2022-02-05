@@ -6,6 +6,7 @@ class ZGesture extends StatefulWidget {
   final double? maxXRotation;
   final double? initialXRotation;
   final double? initialYRotation;
+  final double yRotationOffset;
   final Function(double)? onYRotationUpdate;
   final bool returnToIdleState;
   final ZVector idleState;
@@ -19,6 +20,7 @@ class ZGesture extends StatefulWidget {
     this.initialYRotation,
     this.returnToIdleState = false,
     this.idleState = ZVector.zero,
+    this.yRotationOffset = 0,
   }) : super(key: key);
 
   @override
@@ -30,33 +32,29 @@ class _ZGestureState extends State<ZGesture> with TickerProviderStateMixin {
   double _yRotation = 0.0;
 
   late Animation<double> _idleAnimationVertical;
-  late final AnimationController _idleControllerVertical;
+  late final AnimationController _idleController;
   late final CurvedAnimation _idleCurveVertical;
 
   late Animation<double> _idleAnimationHorizontal;
-  late final AnimationController _idleControllerHorizontal;
+  //late final AnimationController _idleControllerHorizontal;
   late final CurvedAnimation _idleCurveHorizontal;
 
   @override
   void initState() {
     super.initState();
-    _idleControllerVertical = AnimationController(
+    _idleController = AnimationController(
         vsync: this,
-        duration: Duration(milliseconds: 500),
-        reverseDuration: Duration(milliseconds: 500));
+        duration: const Duration(milliseconds: 500),
+        reverseDuration: const Duration(milliseconds: 500));
     _idleCurveVertical = CurvedAnimation(
-        parent: _idleControllerVertical,
+        parent: _idleController,
         curve: Curves.fastOutSlowIn,
         reverseCurve: Curves.fastOutSlowIn);
     _idleAnimationVertical =
         Tween<double>(begin: 0, end: 0).animate(_idleCurveVertical);
 
-    _idleControllerHorizontal = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 500),
-        reverseDuration: Duration(milliseconds: 500));
     _idleCurveHorizontal = CurvedAnimation(
-        parent: _idleControllerHorizontal,
+        parent: _idleController,
         curve: Curves.fastOutSlowIn,
         reverseCurve: Curves.fastOutSlowIn);
     _idleAnimationHorizontal =
@@ -93,8 +91,8 @@ class _ZGestureState extends State<ZGesture> with TickerProviderStateMixin {
         },
         onPanStart: (val) {
           if (widget.returnToIdleState) {
-            _idleControllerVertical.stop();
-            _idleControllerVertical.stop();
+            _idleController.stop();
+            _idleController.stop();
           }
         },
         onPanEnd: (details) {
@@ -102,39 +100,31 @@ class _ZGestureState extends State<ZGesture> with TickerProviderStateMixin {
           if (widget.returnToIdleState) {
             _idleAnimationVertical =
                 Tween<double>(begin: 0, end: _xRotation - widget.idleState.x!)
-                    .animate(_idleControllerVertical);
+                    .animate(_idleController);
             _idleAnimationHorizontal =
                 Tween<double>(begin: 0, end: _yRotation + widget.idleState.y!)
-                    .animate(_idleControllerHorizontal);
-            _idleControllerVertical.reset();
-            _idleControllerHorizontal.reset();
-            _idleControllerVertical.forward().then((val) {
-              _idleControllerVertical.reset();
+                    .animate(_idleController);
+            //_idleController.reset();
+            _idleController.reset();
+            _idleController.forward().then((val) {
+              _idleController.reset();
               _xRotation = widget.idleState.x!;
-            });
-            _idleControllerHorizontal.forward().then((val) {
-              _idleControllerHorizontal.reset();
               _yRotation = widget.idleState.y!;
             });
           }
         },
         child: AnimatedBuilder(
-          animation: _idleAnimationVertical,
+          animation: _idleController,
           builder: (context, child) {
-            return AnimatedBuilder(
-              animation: _idleAnimationHorizontal,
-              builder: (BuildContext context, Widget? _) {
-                return ZIllustration(
-                  children: [
-                    ZPositioned(
-                        rotate: ZVector.only(
-                          y: _yRotation - _idleAnimationHorizontal.value,
-                          x: _xRotation - _idleAnimationVertical.value,
-                        ),
-                        child: child!)
-                  ],
-                );
-              },
+            return ZIllustration(
+              children: [
+                ZPositioned(
+                    rotate: ZVector.only(
+                      y: _yRotation - _idleAnimationHorizontal.value + widget.yRotationOffset,
+                      x: _xRotation - _idleAnimationVertical.value,
+                    ),
+                    child: child!)
+              ],
             );
           },
           child: widget.child,

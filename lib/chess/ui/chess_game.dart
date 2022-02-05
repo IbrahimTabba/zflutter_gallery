@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:zflutter/zflutter.dart';
 import 'package:zflutter_gallery/chess/controller/chess_controller.dart';
 import 'package:zflutter_gallery/chess/input/chess_gesture_input.dart';
 import 'package:zflutter_gallery/chess/models/chess_board.dart';
@@ -18,33 +19,33 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
 
   static const chessCellSize = 55.0;
 
+  late final AnimationController chessPieceAnimationController;
+  late final AnimationController chessBoardAnimationController;
 
   late final CurvedAnimation verticalChessPieceCurve;
-  late final AnimationController verticalChessPieceController;
-
   late final CurvedAnimation horizontalChessPieceCurve;
-  late final AnimationController horizontalChessPieceController;
+  late final CurvedAnimation chessBoardCurve;
+
+  late Animation chessBoardAnimation;
 
   @override
   void initState() {
     super.initState();
     _initAnimations();
-    controller = ChessController(
-      ChessBoard.build(),
-      verticalChessPieceAnimationController: verticalChessPieceController,
-      verticalChessAnimationCurve: verticalChessPieceCurve,
-      horizontalChessAnimationCurve: horizontalChessPieceCurve,
-      horizontalChessPieceAnimationController: horizontalChessPieceController,
-    );
+    controller = ChessController(ChessBoard.build(),
+        chessPieceAnimationController: chessPieceAnimationController,
+        verticalChessAnimationCurve: verticalChessPieceCurve,
+        horizontalChessAnimationCurve: horizontalChessPieceCurve,
+        chessBoardAnimationController: chessBoardAnimationController);
   }
 
   @override
   Widget build(BuildContext context) {
     final screenChessCellSize = min(
-        (min(MediaQuery.of(context).size.width - 100,
-                MediaQuery.of(context).size.height - 50) /
+        (min(MediaQuery.of(context).size.width - 125,
+                MediaQuery.of(context).size.height - 75) /
             8),
-        65.0);
+        75.0);
     controller.updateChessCellSize(screenChessCellSize);
     final scale = screenChessCellSize / chessCellSize;
     return ValueListenableBuilder(
@@ -56,10 +57,15 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
               child: ChessWidget(
                 chessBoard: chessBoard,
                 chessCellSize: chessCellSize * scale,
-                verticalChessPieceAnimation: controller.verticalChessPieceAnimation,
-                horizontalChessPieceAnimation: controller.horizontalChessPieceAnimation,
+                verticalChessPieceAnimation:
+                    controller.verticalChessPieceAnimation,
+                horizontalChessPieceAnimation:
+                    controller.horizontalChessPieceAnimation,
                 scale: scale,
+                animationController: chessPieceAnimationController,
                 activeChessPiece: controller.selectedPiece,
+                chessBoardAnimation: chessBoardAnimation,
+                currentColorTurn: controller.currentColorTurn,
               ),
             ),
             Center(
@@ -75,18 +81,28 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
   }
 
   _initAnimations() {
-    verticalChessPieceController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 350));
-    verticalChessPieceCurve = CurvedAnimation(
-      parent: verticalChessPieceController,
-      curve: Curves.easeInOut,
+    chessPieceAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600));
+
+    chessBoardAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+      reverseDuration: const Duration(milliseconds: 1200),
     );
 
-    horizontalChessPieceController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 350));
-    horizontalChessPieceCurve = CurvedAnimation(
-      parent: horizontalChessPieceController,
-      curve: Curves.easeInOut,
+    verticalChessPieceCurve = CurvedAnimation(
+      parent: chessPieceAnimationController,
+      curve: Curves.fastOutSlowIn,
     );
+    horizontalChessPieceCurve = CurvedAnimation(
+      parent: chessPieceAnimationController,
+      curve: Curves.fastOutSlowIn,
+    );
+    chessBoardCurve = CurvedAnimation(
+      parent: chessBoardAnimationController,
+      curve: Curves.fastOutSlowIn,
+    );
+    chessBoardAnimation =
+        Tween<double>(begin: 0, end: tau / 2).animate(chessBoardCurve);
   }
 }

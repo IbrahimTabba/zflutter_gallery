@@ -1,5 +1,4 @@
 import 'package:zflutter_gallery/chess/models/chess_board.dart';
-import 'package:zflutter_gallery/chess/models/chess_coordinate.dart';
 import 'package:zflutter_gallery/chess/models/chess_move.dart';
 import 'package:zflutter_gallery/chess/models/chess_piece.dart';
 

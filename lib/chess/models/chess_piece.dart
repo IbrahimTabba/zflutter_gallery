@@ -10,6 +10,7 @@ class ChessPiece {
   final ChessPieceColor color;
   final ChessPieceStrategy strategy;
   final ChessPieceType type;
+  bool ignored;
 
   ChessPiece({
     required this.initialPosition,
@@ -17,5 +18,6 @@ class ChessPiece {
     required this.color,
     required this.strategy,
     required this.type,
+    this.ignored = false
   });
 }

@@ -16,15 +16,15 @@ class KnightWidget extends StatelessWidget {
       children: [
         ChessBottomBase(color: color,height: 30,flat: true,diameter: 30,),
         ZPositioned(
-          translate: ZVector.only(y: -30),
+          translate: const ZVector.only(y: -30),
           child: ZShape(
             path: [
               ZMove.only(y: 0,z: 0),
               ZBezier(
                 [
-                  ZVector.only(y: 0 , z: 0),
-                  ZVector.only(y: -35 , z: -10),
-                  ZVector.only(y: 5 , z: -25)
+                  const ZVector.only(y: 0 , z: 0),
+                  const ZVector.only(y: -35 , z: -10),
+                  const ZVector.only(y: 5 , z: -25)
                 ]
               ),
             ],
@@ -33,8 +33,8 @@ class KnightWidget extends StatelessWidget {
           ),
         ),
         ZPositioned(
-          translate: ZVector.only(y: -55 , z: -10),
-          rotate: ZVector.only(y: tau/4),
+          translate: const ZVector.only(y: -55 , z: -10),
+          rotate: const ZVector.only(y: tau/4),
           child: ZShape(
             path: [
               ZMove.only(x: 0, y: -3),

@@ -21,127 +21,93 @@ class ChessWidget extends StatelessWidget {
   final double scale;
   final Animation verticalChessPieceAnimation;
   final Animation horizontalChessPieceAnimation;
+  final Animation chessBoardAnimation;
+  final AnimationController animationController;
   final ChessPiece? activeChessPiece;
+  final ChessPieceColor currentColorTurn;
 
-  ChessWidget(
-      {Key? key, required this.chessBoard, required this.chessCellSize, this.scale=1, required this.verticalChessPieceAnimation , required this.horizontalChessPieceAnimation, this.activeChessPiece})
-      : super(key: key){
-    verticalChessPieceAnimation.addListener((){
-      print('${verticalChessPieceAnimation.value}');
-    }
-    );
-  }
+  const ChessWidget({
+    Key? key,
+    required this.chessBoard,
+    required this.chessCellSize,
+    this.scale = 1,
+    required this.verticalChessPieceAnimation,
+    required this.horizontalChessPieceAnimation,
+    required this.animationController,
+    required this.chessBoardAnimation,
+    this.activeChessPiece,
+    required this.currentColorTurn,
+  }) : super(key: key);
 
-  ZVector itemCoordinates(int i, int j , bool isCurrentPiece) {
+  ZVector itemCoordinates(int i, int j, bool isCurrentPiece) {
     return ZVector.only(
         x: (i * chessCellSize) -
-            (((chessCellSize * 8) / 2) - (0.5 * chessCellSize)) + (isCurrentPiece?horizontalChessPieceAnimation.value:0.0),
+            (((chessCellSize * 8) / 2) - (0.5 * chessCellSize)) +
+            (isCurrentPiece ? horizontalChessPieceAnimation.value : 0.0),
         z: (-j * chessCellSize) +
-            (((chessCellSize * 8) / 2) - (0.5 * chessCellSize))+(isCurrentPiece?verticalChessPieceAnimation.value:0.0));
+            (((chessCellSize * 8) / 2) - (0.5 * chessCellSize)) +
+            (isCurrentPiece ? verticalChessPieceAnimation.value : 0.0));
   }
 
   Widget buildPeace(ChessPiece chessPiece) {
     return AnimatedBuilder(
         animation: verticalChessPieceAnimation,
         builder: (BuildContext context, Widget? child) {
-      return AnimatedBuilder(
-          animation: horizontalChessPieceAnimation,
-          builder: (BuildContext context, Widget? child) {
-            bool isCurrentPiece = chessPiece == activeChessPiece;
-            //print(verticalChessPieceAnimation.value);
-            return ZPositioned(
-              translate: itemCoordinates(
-                  chessPiece.currentPosition.i, chessPiece.currentPosition.j,isCurrentPiece),
-              rotate: chessPiece.color == ChessPieceColor.white?ZVector.only(y: tau/2 ):ZVector.zero,
-              scale: ZVector.all(scale),
-              child: () {
-                switch (chessPiece.type) {
-                  case ChessPieceType.pawn:
-                    return PawnWidget(
-                      color: Color.alphaBlend(itemColor(chessPiece.color).withOpacity(0.7),Color(0xff803300)),
-                      //color: itemColor(chessPiece.color),
-                      scale: scale,
-                    );
-                  case ChessPieceType.rook:
-                    return RookWidget(
-                      color: itemColor(chessPiece.color),
-                      scale: scale,
-                    );
-                  case ChessPieceType.knight:
-                    return KnightWidget(
-                      color: itemColor(chessPiece.color),
-                      scale: scale,
-                    );
-                  case ChessPieceType.bishop:
-                    return BishopWidget(
-                      color: itemColor(chessPiece.color),
-                      scale: scale,
-                    );
-                  case ChessPieceType.queen:
-                    return QueenWidget(
-                      color: itemColor(chessPiece.color),
-                      scale: scale,
-                    );
-                  case ChessPieceType.king:
-                    return KingWidget(
-                      color: itemColor(chessPiece.color),
-                      scale: scale,
-                    );
-                  default:
-                    return ZGroup(
-                      children: [],
-                    );
-                }
-              }.call(),
-            );
-          });});
-    bool isCurrentPiece = chessPiece == activeChessPiece;
-    //print(verticalChessPieceAnimation.value);
-    return ZPositioned(
-      translate: itemCoordinates(
-          chessPiece.currentPosition.i, chessPiece.currentPosition.j,isCurrentPiece),
-      rotate: chessPiece.color == ChessPieceColor.white?ZVector.only(y: tau/2 ):ZVector.zero,
-      scale: ZVector.all(scale),
-      child: () {
-        switch (chessPiece.type) {
-          case ChessPieceType.pawn:
-            return PawnWidget(
-              color: Color.alphaBlend(itemColor(chessPiece.color).withOpacity(0.7),Color(0xff803300)),
-              //color: itemColor(chessPiece.color),
-              scale: scale,
-            );
-          case ChessPieceType.rook:
-            return RookWidget(
-              color: itemColor(chessPiece.color),
-              scale: scale,
-            );
-          case ChessPieceType.knight:
-            return KnightWidget(
-              color: itemColor(chessPiece.color),
-              scale: scale,
-            );
-          case ChessPieceType.bishop:
-            return BishopWidget(
-              color: itemColor(chessPiece.color),
-              scale: scale,
-            );
-          case ChessPieceType.queen:
-            return QueenWidget(
-              color: itemColor(chessPiece.color),
-              scale: scale,
-            );
-          case ChessPieceType.king:
-            return KingWidget(
-              color: itemColor(chessPiece.color),
-              scale: scale,
-            );
-          default:
-            return ZGroup(
-              children: [],
-            );
-        }
-      }.call(),
-    );;
+          return AnimatedBuilder(
+              animation: horizontalChessPieceAnimation,
+              builder: (BuildContext context, Widget? child) {
+                bool isCurrentPiece = chessPiece == activeChessPiece;
+                return ZPositioned(
+                  translate: itemCoordinates(chessPiece.currentPosition.i,
+                      chessPiece.currentPosition.j, isCurrentPiece),
+                  rotate: chessPiece.color == ChessPieceColor.white
+                      ? const ZVector.only(y: tau / 2)
+                      : ZVector.zero,
+                  scale: ZVector.all(scale),
+                  child: () {
+                    switch (chessPiece.type) {
+                      case ChessPieceType.pawn:
+                        return PawnWidget(
+                          color: Color.alphaBlend(
+                              itemColor(chessPiece.color).withOpacity(0.7),
+                              const Color(0xff803300)),
+                          //color: itemColor(chessPiece.color),
+                          scale: scale,
+                        );
+                      case ChessPieceType.rook:
+                        return RookWidget(
+                          color: itemColor(chessPiece.color),
+                          scale: scale,
+                        );
+                      case ChessPieceType.knight:
+                        return KnightWidget(
+                          color: itemColor(chessPiece.color),
+                          scale: scale,
+                        );
+                      case ChessPieceType.bishop:
+                        return BishopWidget(
+                          color: itemColor(chessPiece.color),
+                          scale: scale,
+                        );
+                      case ChessPieceType.queen:
+                        return QueenWidget(
+                          color: itemColor(chessPiece.color),
+                          scale: scale,
+                        );
+                      case ChessPieceType.king:
+                        return KingWidget(
+                          color: itemColor(chessPiece.color),
+                          scale: scale,
+                        );
+                      default:
+                        return ZGroup(
+                          children: const [],
+                        );
+                    }
+                  }.call(),
+                );
+              });
+        });
   }
 
   Color itemColor(ChessPieceColor pieceColor) {
@@ -169,65 +135,32 @@ class ChessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ZGesture(
-      maxXRotation: tau / 8,
-      returnToIdleState: true,
-      idleState: const ZVector.only(x: -tau / 8 , y: 0 , z: 0),
+    return AnimatedBuilder(
+      animation: chessBoardAnimation,
+      builder: (BuildContext context, Widget? child) {
+        return ZGesture(
+          maxXRotation: tau / 8,
+          returnToIdleState: true,
+          idleState: const ZVector.only(x: -tau / 8, y: 0, z: 0),
+          yRotationOffset: chessBoardAnimation.value,
+          child: child!,
+        );
+      },
       child: ZGroup(
+        sortMode: SortMode.update,
         children: [
-          for (final piece in chessBoard.pieces) buildPeace(piece),
+          for (final piece in chessBoard.pieces)
+            if (piece == activeChessPiece)
+              AnimatedBuilder(
+                  animation: animationController,
+                  builder: (BuildContext context, Widget? child) {
+                    return buildPeace(piece);
+                  })
+            else
+              buildPeace(piece),
           buildCells(chessBoard.cells),
         ],
       ),
     );
-    return AnimatedBuilder(
-      animation: verticalChessPieceAnimation,
-      builder: (BuildContext context, Widget? child) {
-        return AnimatedBuilder(
-          animation: horizontalChessPieceAnimation,
-          builder: (BuildContext context, Widget? child) {
-            return ZGesture(
-              maxXRotation: tau / 8,
-              returnToIdleState: true,
-              idleState: const ZVector.only(x: -tau / 8 , y: 0 , z: 0),
-              child: ZGroup(
-                children: [
-                  for (final piece in chessBoard.pieces) buildPeace(piece),
-                  buildCells(chessBoard.cells),
-                ],
-              ),
-            );
-          },
-
-        );
-      },
-    );
-    // return ValueListenableBuilder(
-    //   valueListenable: controller,
-    //   builder: (BuildContext context, ChessBoard chessBoard, Widget? child) {
-    //     return AnimatedBuilder(
-    //       animation: verticalChessPieceAnimation,
-    //       builder: (BuildContext context, Widget? child) {
-    //         return AnimatedBuilder(
-    //           animation: horizontalChessPieceAnimation,
-    //           builder: (BuildContext context, Widget? child) {
-    //             return ZGesture(
-    //               maxXRotation: tau / 8,
-    //               returnToIdleState: true,
-    //               idleState: const ZVector.only(x: -tau / 8 , y: 0 , z: 0),
-    //               child: ZGroup(
-    //                 children: [
-    //                   for (final piece in chessBoard.pieces) buildPeace(piece),
-    //                   buildCells(chessBoard.cells),
-    //                 ],
-    //               ),
-    //             );
-    //           },
-    //
-    //         );
-    //       },
-    //     );
-    //   },
-    // );
   }
 }
