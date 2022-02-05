@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zflutter_gallery/rubik/ui/rubik_cube_game.dart';
 
+import 'elkaso/stage.dart';
+
 void main()async{
   WidgetsFlutterBinding.ensureInitialized();
   GetIt.I.registerSingleton<SharedPreferences>(await SharedPreferences.getInstance());
@@ -39,7 +41,8 @@ class MyApp extends StatelessWidget {
           )
       ),
       debugShowCheckedModeBanner: false,
-      home: const RubikCubeGame(cubeSize: 3,),
+      //home: const RubikCubeGame(cubeSize: 3,),
+      home: const Stage(),
     );
   }
 }

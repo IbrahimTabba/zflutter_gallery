@@ -6,7 +6,7 @@ import 'chess_piece_color.dart';
 
 class ChessPiece {
   final ChessCoordinate initialPosition;
-  final ChessCoordinate currentPosition;
+  ChessCoordinate currentPosition;
   final ChessPieceColor color;
   final ChessPieceStrategy strategy;
   final ChessPieceType type;

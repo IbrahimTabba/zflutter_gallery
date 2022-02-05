@@ -32,23 +32,6 @@ class PawnWidget extends StatelessWidget {
             color: color,
           ),
         ),
-        // ZPositioned(
-        //   translate: ZVector.only(z: 10),
-        //   child: ZToBoxAdapter(
-        //     width: 20,
-        //     height: 60,
-        //     child: InkWell(
-        //       onTap: (){
-        //         showDialog(context: context , builder: (context)=>Container(width: 100 , height: 100 , color: Colors.yellow,));
-        //       },
-        //       child: Container(
-        //         width: 20,
-        //         height: 60,
-        //         color: Colors.red,
-        //       ),
-        //     ),
-        //   ),
-        // )
       ],
     );
   }

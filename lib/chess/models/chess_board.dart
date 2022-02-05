@@ -1,4 +1,5 @@
 import 'package:zflutter_gallery/chess/models/chess_coordinate.dart';
+import 'package:zflutter_gallery/chess/models/chess_move.dart';
 import 'package:zflutter_gallery/chess/models/chess_piece.dart';
 import 'package:zflutter_gallery/chess/models/chess_piece_color.dart';
 import 'package:zflutter_gallery/chess/models/chess_piece_type.dart';
@@ -8,7 +9,7 @@ import 'package:zflutter_gallery/chess/models/strategy/knight_piece_strategy.dar
 import 'package:zflutter_gallery/chess/models/strategy/pawn_piece_strategy.dart';
 import 'package:zflutter_gallery/chess/models/strategy/queen_piece_strategy.dart';
 import 'package:zflutter_gallery/chess/models/strategy/rook_piece_strategy.dart';
-
+import 'package:collection/collection.dart';
 import 'chess_cell.dart';
 
 class ChessBoard {
@@ -26,7 +27,7 @@ class ChessBoard {
                 currentPosition: ChessCoordinate(i, 1),
                 color: ChessPieceColor.black,
                 type: ChessPieceType.pawn,
-                strategy: PawnPieceStrategy()),
+                strategy: PawnPieceStrategy(reverse: false)),
           ChessPiece(
               initialPosition: ChessCoordinate(0, 0),
               currentPosition: ChessCoordinate(0, 0),
@@ -83,7 +84,7 @@ class ChessBoard {
                 currentPosition: ChessCoordinate(i, 6),
                 color: ChessPieceColor.white,
                 type: ChessPieceType.pawn,
-                strategy: PawnPieceStrategy()),
+                strategy: PawnPieceStrategy(reverse: true)),
           ChessPiece(
               initialPosition: ChessCoordinate(0, 7),
               currentPosition: ChessCoordinate(0, 7),
@@ -142,18 +143,150 @@ class ChessBoard {
               )
         ];
 
-  ChessCell cellAt(int i, int j) => cells
-      .where((cell) => cell.coordinate.i == i && cell.coordinate.j == j)
-      .first;
+  ChessCell? cellAt(ChessCoordinate coordinate) =>
+      cells.firstWhereOrNull((cell) => cell.coordinate == coordinate);
 
-  clearAllHighlightCells() {
+  ChessPiece? pieceAt(ChessCoordinate coordinate) =>
+      pieces.firstWhereOrNull((piece) => piece.currentPosition == coordinate);
+
+  bool cellHasPiece(ChessCoordinate coordinate) {
+    return pieces.any((piece) => piece.currentPosition == coordinate);
+  }
+
+  bool isValidCoordinate(ChessCoordinate coordinate) =>
+      coordinate.i <= 7 &&
+      coordinate.i >= 0 &&
+      coordinate.j <= 7 &&
+      coordinate.j >= 0;
+
+  bool cellIsEmpty(ChessCoordinate coordinate) =>
+      isValidCoordinate(coordinate) && !cellHasPiece(coordinate);
+
+  removePieceAt(ChessCoordinate coordinate){
+    pieces.removeWhere((piece)=>piece.currentPosition == coordinate);
+  }
+
+  bool cellHasEnemy(ChessCoordinate target, ChessPieceColor color) {
+    final targetPiece = pieceAt(target);
+    return targetPiece != null && targetPiece.color != color;
+  }
+
+  List<ChessCell> possibleTargetsForChessPiece(ChessPiece piece) {
+    final result = <ChessCell>[];
+    piece.strategy.constNonAttackMoves?.forEach((move) {
+      if (move.target != null) {
+        final moveCoordinate =
+            piece.currentPosition.move(move.target!.i, move.target!.j);
+        if (cellIsEmpty(moveCoordinate)) {
+          result.add(cellAt(moveCoordinate)!);
+        }
+      }
+    });
+    final attackMoves = piece.strategy.constAttackMoves +
+        (piece.strategy.conditionalMoves?.call(piece, this) ??
+            <ChessPieceMove>[]);
+    for (final move in attackMoves) {
+      if (move.target != null) {
+        final moveCoordinate =
+            piece.currentPosition.move(move.target!.i, move.target!.j);
+        if (cellIsEmpty(moveCoordinate) ||
+            cellHasEnemy(moveCoordinate, piece.color)) {
+          result.add(cellAt(moveCoordinate)!);
+        }
+      }
+      if (move.canCrossOrthogonal ?? false) {
+        var horizontalMove = 1;
+        while (cellIsEmpty(piece.currentPosition.move(horizontalMove, 0))) {
+          result.add(cellAt(piece.currentPosition.move(horizontalMove, 0))!);
+          horizontalMove++;
+        }
+        if (cellHasEnemy(
+            piece.currentPosition.move(horizontalMove, 0), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(horizontalMove, 0))!);
+        }
+        horizontalMove = -1;
+        while (cellIsEmpty(piece.currentPosition.move(horizontalMove, 0))) {
+          result.add(cellAt(piece.currentPosition.move(horizontalMove, 0))!);
+          horizontalMove--;
+        }
+        if (cellHasEnemy(
+            piece.currentPosition.move(horizontalMove, 0), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(horizontalMove, 0))!);
+        }
+
+        var verticalMove = 1;
+        while (cellIsEmpty(piece.currentPosition.move(0, verticalMove))) {
+          result.add(cellAt(piece.currentPosition.move(0, verticalMove))!);
+          verticalMove++;
+        }
+        if (cellHasEnemy(
+            piece.currentPosition.move(0, verticalMove), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(0, verticalMove))!);
+        }
+        verticalMove = -1;
+        while (cellIsEmpty(piece.currentPosition.move(0, verticalMove))) {
+          result.add(cellAt(piece.currentPosition.move(0, verticalMove))!);
+          verticalMove--;
+        }
+        if (cellHasEnemy(
+            piece.currentPosition.move(0, verticalMove), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(0, verticalMove))!);
+        }
+      }
+
+      if (move.canCrossDiameters ?? false) {
+        var i = 1;
+        var j = 1;
+        while (cellIsEmpty(piece.currentPosition.move(i, j))) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+          i++;
+          j++;
+        }
+        if (cellHasEnemy(piece.currentPosition.move(i, j), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+        }
+
+        i = -1;
+        j = -1;
+        while (cellIsEmpty(piece.currentPosition.move(i, j))) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+          i--;
+          j--;
+        }
+        if (cellHasEnemy(piece.currentPosition.move(i, j), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+        }
+
+        i = 1;
+        j = -1;
+        while (cellIsEmpty(piece.currentPosition.move(i, j))) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+          i++;
+          j--;
+        }
+        if (cellHasEnemy(piece.currentPosition.move(i, j), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+        }
+
+        i = -1;
+        j = 1;
+        while (cellIsEmpty(piece.currentPosition.move(i, j))) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+          i--;
+          j++;
+        }
+        if (cellHasEnemy(piece.currentPosition.move(i, j), piece.color)) {
+          result.add(cellAt(piece.currentPosition.move(i, j))!);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  void clearAllHighlightCells() {
     for (final cell in cells) {
       cell.highlightColor = null;
     }
-  }
-
-  bool cellHasPiece(int i, int j) {
-    return pieces.any((piece) =>
-        piece.currentPosition.i == i && piece.currentPosition.j == j);
   }
 }

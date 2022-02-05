@@ -10,4 +10,11 @@ class ChessPieceMove {
     this.canCrossOrthogonal,
     this.canCrossDiameters,
   });
+
+  operator *(int x) => ChessPieceMove(
+      canCrossDiameters: canCrossDiameters,
+      canCrossOrthogonal: canCrossOrthogonal,
+      target: target != null
+          ? ChessCoordinate(target!.i * x, target!.j * x)
+          : null);
 }

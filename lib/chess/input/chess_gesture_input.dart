@@ -24,13 +24,19 @@ class ChessGestureInput extends StatelessWidget {
                 width: cellSize,
                 height: cellSize*0.7,
                 //color: Colors.red.withOpacity(0.5),
-                child: MouseRegion(
-                  onHover: (event){
-                    controller.testHover(i,8-j-1);
+                child: GestureDetector(
+                  onTap: (){
+                    controller.onPressOnCell(i,8-j-1);
                   },
-                  onExit: (event){
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.move,
+                    onEnter: (event){
+                      controller.cellHover(i,8-j-1);
+                    },
+                    onExit: (event){
 
-                  },
+                    },
+                  ),
                 ),
               ))
             ],
