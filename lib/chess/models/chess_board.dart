@@ -154,7 +154,7 @@ class ChessBoard {
   ChessPiece? kingPiece(ChessPieceColor color) => pieces.firstWhereOrNull((piece) => piece.color == color && piece.type == ChessPieceType.king);
 
   ChessPiece? pieceAt(ChessCoordinate coordinate) =>
-      pieces.firstWhereOrNull((piece) => piece.currentPosition == coordinate);
+      pieces.firstWhereOrNull((piece) => piece.currentPosition == coordinate && !piece.ignored);
 
   bool cellHasPiece(ChessCoordinate coordinate) {
     return pieces.any((piece) => piece.currentPosition == coordinate && !piece.ignored);
@@ -176,7 +176,7 @@ class ChessBoard {
 
 
   bool isCheckMate(ChessPieceColor color){
-    final enemyPieces = pieces.where((piece)=>piece.color != color).toList();
+    final enemyPieces = pieces.where((piece)=>piece.color != color && !piece.ignored).toList();
     final king = kingPiece(color);
     for(final piece in enemyPieces){
       final moves = possibleTargetsForChessPiece(piece);
@@ -303,6 +303,9 @@ class ChessBoard {
       }
     }
 
+    // final enemyColor = piece.color == ChessPieceColor.black ? ChessPieceColor.white:ChessPieceColor.black;
+    // final enemyKingCell = kingCell(enemyColor);
+    // result.remove(enemyKingCell);
     return result;
   }
 
