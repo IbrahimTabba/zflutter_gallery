@@ -2,9 +2,9 @@ class ChessCoordinate {
   final int i, j;
 
   ChessCoordinate(
-      this.i,
-      this.j,
-      );
+    this.i,
+    this.j,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -14,11 +14,8 @@ class ChessCoordinate {
           i == other.i &&
           j == other.j;
 
-  ChessCoordinate move(int i , int j){
-    return ChessCoordinate(
-      this.i + i,
-      this.j + j
-    );
+  ChessCoordinate move(int i, int j) {
+    return ChessCoordinate(this.i + i, this.j + j);
   }
 
   @override

@@ -139,25 +139,27 @@ class ChessBoard {
             for (int j = 0; j < 8; j++)
               ChessCell(
                 coordinate: ChessCoordinate(i, j),
-                //highlightColor: 0xff880808,
               )
         ];
 
   ChessCell? cellAt(ChessCoordinate coordinate) =>
       cells.firstWhereOrNull((cell) => cell.coordinate == coordinate);
 
-  ChessCell? kingCell(ChessPieceColor color){
+  ChessCell? kingCell(ChessPieceColor color) {
     final king = kingPiece(color);
-    return cells.firstWhereOrNull((cell) => cell.coordinate == king?.currentPosition);
+    return cells
+        .firstWhereOrNull((cell) => cell.coordinate == king?.currentPosition);
   }
 
-  ChessPiece? kingPiece(ChessPieceColor color) => pieces.firstWhereOrNull((piece) => piece.color == color && piece.type == ChessPieceType.king);
+  ChessPiece? kingPiece(ChessPieceColor color) => pieces.firstWhereOrNull(
+      (piece) => piece.color == color && piece.type == ChessPieceType.king);
 
-  ChessPiece? pieceAt(ChessCoordinate coordinate) =>
-      pieces.firstWhereOrNull((piece) => piece.currentPosition == coordinate && !piece.ignored);
+  ChessPiece? pieceAt(ChessCoordinate coordinate) => pieces.firstWhereOrNull(
+      (piece) => piece.currentPosition == coordinate && !piece.ignored);
 
   bool cellHasPiece(ChessCoordinate coordinate) {
-    return pieces.any((piece) => piece.currentPosition == coordinate && !piece.ignored);
+    return pieces
+        .any((piece) => piece.currentPosition == coordinate && !piece.ignored);
   }
 
   bool isValidCoordinate(ChessCoordinate coordinate) =>
@@ -169,19 +171,19 @@ class ChessBoard {
   bool cellIsEmpty(ChessCoordinate coordinate) =>
       isValidCoordinate(coordinate) && !cellHasPiece(coordinate);
 
-  removePieceAt(ChessCoordinate coordinate){
-    pieces.removeWhere((piece)=>piece.currentPosition == coordinate);
+  removePieceAt(ChessCoordinate coordinate) {
+    pieces.removeWhere((piece) => piece.currentPosition == coordinate);
   }
 
-
-
-  bool isCheckMate(ChessPieceColor color){
-    final enemyPieces = pieces.where((piece)=>piece.color != color && !piece.ignored).toList();
+  bool isCheckMate(ChessPieceColor color) {
+    final enemyPieces = pieces
+        .where((piece) => piece.color != color && !piece.ignored)
+        .toList();
     final king = kingPiece(color);
-    for(final piece in enemyPieces){
+    for (final piece in enemyPieces) {
       final moves = possibleTargetsForChessPiece(piece);
-      for(final move in moves){
-        if(move.coordinate == king!.currentPosition) {
+      for (final move in moves) {
+        if (move.coordinate == king!.currentPosition) {
           return true;
         }
       }
@@ -191,7 +193,9 @@ class ChessBoard {
 
   bool cellHasEnemy(ChessCoordinate target, ChessPieceColor color) {
     final targetPiece = pieceAt(target);
-    return targetPiece != null && targetPiece.color != color && !targetPiece.ignored;
+    return targetPiece != null &&
+        targetPiece.color != color &&
+        !targetPiece.ignored;
   }
 
   List<ChessCell> possibleTargetsForChessPiece(ChessPiece piece) {
@@ -311,7 +315,7 @@ class ChessBoard {
 
   void clearAllHighlightCells({forClearKing = true}) {
     for (final cell in cells) {
-      if(cell.highlightColor != 0xffff0000 || forClearKing) {
+      if (cell.highlightColor != 0xffff0000 || forClearKing) {
         cell.highlightColor = null;
       }
     }

@@ -13,24 +13,24 @@ class QueenWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ZGroup(
       children: [
-        ChessBottomBase(color: color,height: 65,flat: true,diameter: 38,),
+        ChessBottomBase(
+          color: color,
+          height: 65,
+          flat: true,
+          diameter: 38,
+        ),
         ZPositioned(
-          translate: const ZVector.only(y: -80),
-            rotate: const ZVector.only(x: -tau/4),
+            translate: const ZVector.only(y: -80),
+            rotate: const ZVector.only(x: -tau / 4),
             child: ZCone(
-                diameter: 30,
-                length: 60,
-                color: color,
-                backfaceColor: color
-            )),
+                diameter: 30, length: 60, color: color, backfaceColor: color)),
         ZPositioned(
-          translate: const ZVector.only(y:-82.5),
+          translate: const ZVector.only(y: -82.5),
           child: ZShape(
             stroke: 15 * scale,
             color: color,
           ),
         )
-
       ],
     );
   }

@@ -105,12 +105,12 @@ class ChessWidget extends StatelessWidget {
   Color itemColor(ChessPiece piece) {
     switch (piece.color) {
       case ChessPieceColor.black:
-        if(piece.type == ChessPieceType.pawn) {
+        if (piece.type == ChessPieceType.pawn) {
           return const Color(0xff333333);
         }
         return Colors.black;
       case ChessPieceColor.white:
-        if(piece.type!=ChessPieceType.pawn) {
+        if (piece.type != ChessPieceType.pawn) {
           return const Color(0xffd9ad8f);
         }
         //return Colors.white;

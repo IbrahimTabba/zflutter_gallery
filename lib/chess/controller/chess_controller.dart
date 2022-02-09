@@ -45,7 +45,7 @@ class ChessController extends ValueNotifier<ChessBoard> {
   ChessBoard get board => value;
 
   onPressOnCell(int i, int j) async {
-    lock.synchronized(()async{
+    lock.synchronized(() async {
       final coordinate = ChessCoordinate(i, j);
       if (coordinate == selectedPiece?.currentPosition) {
         selectedPiece = null;
@@ -53,8 +53,8 @@ class ChessController extends ValueNotifier<ChessBoard> {
         possibleTargetsForSelectedCell = null;
         notifyListeners();
       } else if (possibleTargetsForSelectedCell
-          ?.map((e) => e.coordinate)
-          .contains(coordinate) ??
+              ?.map((e) => e.coordinate)
+              .contains(coordinate) ??
           false) {
         final originalPiecePosition = selectedPiece!.currentPosition;
         board.pieceAt(ChessCoordinate(i, j))?.ignored = true;
@@ -68,12 +68,12 @@ class ChessController extends ValueNotifier<ChessBoard> {
         board.clearAllHighlightCells();
         if (chessCellSize != null) {
           verticalChessPieceAnimation = Tween<double>(
-              begin: 0,
-              end: chessCellSize! * (selectedPiece!.currentPosition.j - j))
+                  begin: 0,
+                  end: chessCellSize! * (selectedPiece!.currentPosition.j - j))
               .animate(verticalChessAnimationCurve);
           horizontalChessPieceAnimation = Tween<double>(
-              begin: 0,
-              end: chessCellSize! * (i - selectedPiece!.currentPosition.i))
+                  begin: 0,
+                  end: chessCellSize! * (i - selectedPiece!.currentPosition.i))
               .animate(horizontalChessAnimationCurve);
           notifyListeners();
           await chessPieceAnimationController.forward();
@@ -110,7 +110,6 @@ class ChessController extends ValueNotifier<ChessBoard> {
         }
       }
     });
-
   }
 
   cellHover(int i, int j) {
@@ -120,7 +119,7 @@ class ChessController extends ValueNotifier<ChessBoard> {
     if (board.cellHasPiece(ChessCoordinate(i, j)) &&
         board.pieceAt(ChessCoordinate(i, j))?.color == currentColorTurn) {
       board.clearAllHighlightCells(forClearKing: false);
-      if(board.cellAt(ChessCoordinate(i, j))?.highlightColor!=0xffff0000) {
+      if (board.cellAt(ChessCoordinate(i, j))?.highlightColor != 0xffff0000) {
         board.cellAt(ChessCoordinate(i, j))?.highlightColor = 0xff2e7ef0;
       }
       notifyListeners();

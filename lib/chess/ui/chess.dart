@@ -13,8 +13,7 @@ class Chess extends StatelessWidget {
             begin: FractionalOffset(0.0, 0.0),
             end: FractionalOffset(1, 1),
             stops: [0.0, 1.0],
-            tileMode: TileMode.clamp
-        ),
+            tileMode: TileMode.clamp),
       ),
       child: const Scaffold(
         backgroundColor: Colors.transparent,

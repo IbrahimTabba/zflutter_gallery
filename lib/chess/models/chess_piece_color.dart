@@ -1,3 +1,1 @@
-enum ChessPieceColor{
-  black , white
-}
+enum ChessPieceColor { black, white }

@@ -1,7 +1,8 @@
 import 'package:zflutter_gallery/chess/models/chess_coordinate.dart';
 
-class ChessCell{
+class ChessCell {
   ChessCoordinate coordinate;
   int? highlightColor;
-  ChessCell({required this.coordinate , this.highlightColor});
+
+  ChessCell({required this.coordinate, this.highlightColor});
 }

@@ -36,6 +36,7 @@ class _ZGestureState extends State<ZGesture> with TickerProviderStateMixin {
   late final CurvedAnimation _idleCurveVertical;
 
   late Animation<double> _idleAnimationHorizontal;
+
   //late final AnimationController _idleControllerHorizontal;
   late final CurvedAnimation _idleCurveHorizontal;
 
@@ -120,7 +121,9 @@ class _ZGestureState extends State<ZGesture> with TickerProviderStateMixin {
               children: [
                 ZPositioned(
                     rotate: ZVector.only(
-                      y: _yRotation - _idleAnimationHorizontal.value + widget.yRotationOffset,
+                      y: _yRotation -
+                          _idleAnimationHorizontal.value +
+                          widget.yRotationOffset,
                       x: _xRotation - _idleAnimationVertical.value,
                     ),
                     child: child!)

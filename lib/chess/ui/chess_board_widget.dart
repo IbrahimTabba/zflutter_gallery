@@ -30,8 +30,9 @@ class ChessBoardWidget extends StatelessWidget {
                 fill: true,
                 color: Color.alphaBlend(
                     ((cell.coordinate.i + cell.coordinate.j) % 2 == 0
-                        ? const Color(0xff803300)
-                        : Colors.white).withOpacity(cell.highlightColor != null?0.3:1),
+                            ? const Color(0xff803300)
+                            : Colors.white)
+                        .withOpacity(cell.highlightColor != null ? 0.3 : 1),
                     cell.highlightColor != null
                         ? Color(cell.highlightColor!)
                         : Colors.transparent),

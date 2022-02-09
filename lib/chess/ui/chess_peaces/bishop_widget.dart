@@ -13,7 +13,12 @@ class BishopWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ZGroup(
       children: [
-        ChessBottomBase(color: color,height: 45,flat: true,diameter: 30,),
+        ChessBottomBase(
+          color: color,
+          height: 45,
+          flat: true,
+          diameter: 30,
+        ),
         ZPositioned(
           translate: const ZVector.only(y: -55),
           child: ZEllipse(

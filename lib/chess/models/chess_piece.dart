@@ -12,12 +12,11 @@ class ChessPiece {
   final ChessPieceType type;
   bool ignored;
 
-  ChessPiece({
-    required this.initialPosition,
-    required this.currentPosition,
-    required this.color,
-    required this.strategy,
-    required this.type,
-    this.ignored = false
-  });
+  ChessPiece(
+      {required this.initialPosition,
+      required this.currentPosition,
+      required this.color,
+      required this.strategy,
+      required this.type,
+      this.ignored = false});
 }

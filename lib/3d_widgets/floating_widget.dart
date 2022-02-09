@@ -32,15 +32,13 @@ class _FloatingWidgetState extends State<FloatingWidget>
     // _idleAnimation =
     //     Tween<double>(begin: -tau / 40, end: tau / 40).animate(_idleCurve);
 
-    _idleAnimation =
-        Tween<double>(begin: 20, end: -20).animate(_idleCurve);
+    _idleAnimation = Tween<double>(begin: 20, end: -20).animate(_idleCurve);
 
-    _idleController.repeat(reverse: true );
+    _idleController.repeat(reverse: true);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return AnimatedBuilder(
       animation: _idleAnimation,
       builder: (BuildContext context, Widget? child) {
@@ -50,7 +48,6 @@ class _FloatingWidgetState extends State<FloatingWidget>
         );
       },
       child: widget.child,
-
     );
   }
 }
