@@ -50,64 +50,56 @@ class ChessWidget extends StatelessWidget {
   }
 
   Widget buildPeace(ChessPiece chessPiece) {
-    return AnimatedBuilder(
-        animation: verticalChessPieceAnimation,
-        builder: (BuildContext context, Widget? child) {
-          return AnimatedBuilder(
-              animation: horizontalChessPieceAnimation,
-              builder: (BuildContext context, Widget? child) {
-                bool isCurrentPiece = chessPiece == activeChessPiece;
-                return ZPositioned(
-                  translate: itemCoordinates(chessPiece.currentPosition.i,
-                      chessPiece.currentPosition.j, isCurrentPiece),
-                  rotate: chessPiece.color == ChessPieceColor.white
-                      ? const ZVector.only(y: tau / 2)
-                      : ZVector.zero,
-                  scale: ZVector.all(scale),
-                  child: () {
-                    switch (chessPiece.type) {
-                      case ChessPieceType.pawn:
-                        return PawnWidget(
-                          // color: Color.alphaBlend(
-                          //     itemColor(chessPiece).withOpacity(0.7),
-                          //     const Color(0xff803300)),
-                          color: itemColor(chessPiece),
-                          scale: scale,
-                        );
-                      case ChessPieceType.rook:
-                        return RookWidget(
-                          color: itemColor(chessPiece),
-                          scale: scale,
-                        );
-                      case ChessPieceType.knight:
-                        return KnightWidget(
-                          color: itemColor(chessPiece),
-                          scale: scale,
-                        );
-                      case ChessPieceType.bishop:
-                        return BishopWidget(
-                          color: itemColor(chessPiece),
-                          scale: scale,
-                        );
-                      case ChessPieceType.queen:
-                        return QueenWidget(
-                          color: itemColor(chessPiece),
-                          scale: scale,
-                        );
-                      case ChessPieceType.king:
-                        return KingWidget(
-                          color: itemColor(chessPiece),
-                          scale: scale,
-                        );
-                      default:
-                        return ZGroup(
-                          children: const [],
-                        );
-                    }
-                  }.call(),
-                );
-              });
-        });
+    bool isCurrentPiece = chessPiece == activeChessPiece;
+    return ZPositioned(
+      translate: itemCoordinates(chessPiece.currentPosition.i,
+          chessPiece.currentPosition.j, isCurrentPiece),
+      rotate: chessPiece.color == ChessPieceColor.white
+          ? const ZVector.only(y: tau / 2)
+          : ZVector.zero,
+      scale: ZVector.all(scale),
+      child: () {
+        switch (chessPiece.type) {
+          case ChessPieceType.pawn:
+            return PawnWidget(
+              // color: Color.alphaBlend(
+              //     itemColor(chessPiece).withOpacity(0.7),
+              //     const Color(0xff803300)),
+              color: itemColor(chessPiece),
+              scale: scale,
+            );
+          case ChessPieceType.rook:
+            return RookWidget(
+              color: itemColor(chessPiece),
+              scale: scale,
+            );
+          case ChessPieceType.knight:
+            return KnightWidget(
+              color: itemColor(chessPiece),
+              scale: scale,
+            );
+          case ChessPieceType.bishop:
+            return BishopWidget(
+              color: itemColor(chessPiece),
+              scale: scale,
+            );
+          case ChessPieceType.queen:
+            return QueenWidget(
+              color: itemColor(chessPiece),
+              scale: scale,
+            );
+          case ChessPieceType.king:
+            return KingWidget(
+              color: itemColor(chessPiece),
+              scale: scale,
+            );
+          default:
+            return ZGroup(
+              children: const [],
+            );
+        }
+      }.call(),
+    );
   }
 
   Color itemColor(ChessPiece piece) {
