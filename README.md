@@ -9,4 +9,9 @@ Zflutter gallery is a project that gathers all awesome 3d apps made with [Zflutt
 
 ZRubic's cube is a basic implementation for NXN Rubik's Cube presented as a game.
 you can try it on [Web](https://zflutter-gallery.web.app/) .
-also it is available on google play [Google Play](https://play.google.com/store/apps/details?id=com.ibrahim.zrubikscube) 
+also it is available on google play [Google Play](https://play.google.com/store/apps/details?id=com.ibrahim.zrubikscube)
+
+## 2. ZChess
+
+ZChess is a basic implementation for Chess game.
+you can try it on [Web](https://zchess-3d.web.app/) .
