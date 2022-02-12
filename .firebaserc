@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "zflutter-gallery",
+    "zchess": "zflutter-gallery"
+  },
+  "targets": {
+    "zflutter-gallery": {
+      "hosting": {
+        "zchess": [
+          "zchess-3d"
+        ],
+        "zflutter-gallery": [
+          "zflutter-gallery"
+        ]
+      }
+    }
+  }
+}
