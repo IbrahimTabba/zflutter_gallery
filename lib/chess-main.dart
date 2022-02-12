@@ -33,7 +33,6 @@ class ChessApp extends StatelessWidget {
                     color: Colors.white,
                     fontFamily: 'VT323',
                   ))
-                //padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.symmetric(vertical: 9 , horizontal: 17))
               )
           )
       ),

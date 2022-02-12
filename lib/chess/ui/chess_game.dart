@@ -20,6 +20,7 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
   static const chessCellSize = 55.0;
 
   late final AnimationController chessPieceAnimationController;
+  late final AnimationController chessPieceInitialAnimationController;
   late final AnimationController chessBoardAnimationController;
 
   late final CurvedAnimation verticalChessPieceCurve;
@@ -27,6 +28,7 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
   late final CurvedAnimation chessBoardCurve;
 
   late Animation chessBoardAnimation;
+  late Animation chessPieceInitialAnimation;
 
   @override
   void initState() {
@@ -37,6 +39,11 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
         verticalChessAnimationCurve: verticalChessPieceCurve,
         horizontalChessAnimationCurve: horizontalChessPieceCurve,
         chessBoardAnimationController: chessBoardAnimationController);
+
+    WidgetsBinding.instance?.addPostFrameCallback((_)async{
+      await Future.delayed(const Duration(seconds: 1));
+      chessPieceInitialAnimationController.forward();
+    });
   }
 
   @override
@@ -55,25 +62,26 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
           children: [
             Center(
               child: ChessWidget(
-                chessBoard: chessBoard,
+                chessController: controller,
                 chessCellSize: chessCellSize * scale,
                 verticalChessPieceAnimation:
                     controller.verticalChessPieceAnimation,
                 horizontalChessPieceAnimation:
                     controller.horizontalChessPieceAnimation,
                 scale: scale,
+                pieceIntroAnimation: chessPieceInitialAnimation,
                 animationController: chessPieceAnimationController,
                 activeChessPiece: controller.selectedPiece,
                 chessBoardAnimation: chessBoardAnimation,
                 currentColorTurn: controller.currentColorTurn,
               ),
             ),
-            Center(
-              child: ChessGestureInput(
-                controller: controller,
-                cellSize: chessCellSize * scale,
-              ),
-            )
+            // Center(
+            //   child: ChessGestureInput(
+            //     controller: controller,
+            //     cellSize: chessCellSize * scale,
+            //   ),
+            // )
           ],
         );
       },
@@ -90,6 +98,11 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
       reverseDuration: const Duration(milliseconds: 1200),
     );
 
+    chessPieceInitialAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
     verticalChessPieceCurve = CurvedAnimation(
       parent: chessPieceAnimationController,
       curve: Curves.fastOutSlowIn,
@@ -104,5 +117,11 @@ class _ChessGameState extends State<ChessGame> with TickerProviderStateMixin {
     );
     chessBoardAnimation =
         Tween<double>(begin: 0, end: tau / 2).animate(chessBoardCurve);
+
+    chessPieceInitialAnimation =
+        Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+          parent: chessPieceInitialAnimationController,
+          curve: Curves.linear,
+        ));
   }
 }
